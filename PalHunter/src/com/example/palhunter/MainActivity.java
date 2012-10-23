@@ -1,25 +1,57 @@
 package com.example.palhunter;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
+import org.apache.http.client.HttpClient;
+
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity {
-
+/*
 	TextView latitute;
 	TextView longitute;
+	EditText nameText;
+	Date myDate;
+	Timestamp myTimestamp;
+	String userName = "team17";
+	String password = "palhunter";
+	
+	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
+    String httpPostURL = "http://hamedaan.usc.edu:8080/team17/PostServlet?FIRST_NAME=%s&LAST_NAME=%s&CREATED_TIME=%d";
+    String httpQueryURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet";
+	Handler handler; 
+*/		
+	
+	public void CreateUser(View view) {
+		System.out.println("create user");
+		Intent intent = new Intent(this, CreateUserActivity.class);
+		startActivity(intent);
+	}
+    public void LogIn(View view){
+		Intent intent = new Intent(this, LogInActivity.class);
+		startActivity(intent);
+    }
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+/*        
+        myDate = new Date();
         
         latitute = (TextView)findViewById(R.id.editText1);
         longitute = (TextView)findViewById(R.id.editText2);
@@ -28,14 +60,17 @@ public class MainActivity extends Activity {
         LocationListener ll = new myLocationListener();
         
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,ll); 
+*/        
     }
-    
+ /*   
     private class myLocationListener implements LocationListener {
 
 		public void onLocationChanged(Location location) {
 			// TODO Auto-generated method stub
 			Double latituteValue = location.getLatitude();
 			Double longituteValue = location.getLongitude();
+			
+			myTimestamp = new Timestamp(myDate.getTime());
 			
 			latitute.setText(latituteValue.toString());
 			longitute.setText(longituteValue.toString());
@@ -58,10 +93,11 @@ public class MainActivity extends Activity {
 		}
     	
     }
-
+*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
+//        getActionBar().setDisplayHomeAsUpEnabled(true);
         return true;
     }
     
