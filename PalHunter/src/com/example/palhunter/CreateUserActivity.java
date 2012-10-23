@@ -1,16 +1,19 @@
 package com.example.palhunter;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
-import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NavUtils;
@@ -19,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+import com.loopj.android.http.*;
 
 public class CreateUserActivity extends Activity {
 	
@@ -30,44 +34,57 @@ public class CreateUserActivity extends Activity {
 	String password = "palhunter1";
 	
 	public final static String EXTRA_MESSAGE = "com.example.palhunter.MESSAGE";
-	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
-    String httpPostURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?id=%d&first_name=%s&last_name=%s&created_time=%d&action=insertPeople";
-    String httpQueryURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?id=%d&action=queryPeopleId";
-    
-    
+	HttpClient httpClient = new DefaultHttpClient();
+    String httpInserUserURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?id=%d&first_name=%s&last_name=%s&created_time=%d&action=insertPeople";
+    final String httpGetUserNumQuery = "http://hamedaan.usc.edu:8080/team17/QueryServlet?action=getTotalPeople";
+    String firstName, lastName;
 	Handler handler; 
 	
     public void SubmitData(View view) {
     	System.out.println("submit data");
     	
     	firstNameText = (EditText)findViewById(R.id.first_name);
-    	String firstName = firstNameText.getText().toString().trim();
+    	firstName = firstNameText.getText().toString().trim();
     	
     	lastNameText = (EditText)findViewById(R.id.last_name);
-    	String lastName = lastNameText.getText().toString().trim();
+    	lastName = lastNameText.getText().toString().trim();
     	
     	//random user id??
     	userId = 10;
     	if (firstName.length() <= 0) {
     		Toast.makeText(this, "please input your name", Toast.LENGTH_SHORT).show();
     	} else {
-    		System.out.println("got message: " + firstName + "  " + lastName);
-    		long pubDate = System.currentTimeMillis();
-    		
-    		final String url = String.format(httpPostURL, userId, firstName, lastName, pubDate);
-    		System.out.println(" send request:  " + url);
+    		System.out.println("got message: " + firstName + "  " + lastName);	
     		
     		final Runnable rr = new Runnable() {
 				public void run() {
-					HttpResponse responseStream;
-		    		HttpPost httpPost = new HttpPost(url);
+	    			HttpGet getUserNumUrl = new HttpGet(httpGetUserNumQuery);
+		    		HttpResponse response;
 		    		try {
-						responseStream = httpClient.execute(httpPost);
-						System.out.println(responseStream.getEntity().getContent());
+						response = httpClient.execute(getUserNumUrl);
+						System.out.println(response.getEntity().getContent().toString());
+						userId = Integer.parseInt(response.getEntity().getContent().toString());
+						response.getEntity().consumeContent();
 					} catch (Exception e) {
-						System.out.println("cant connect to server");
+						System.out.println("cant get total user number");
 						e.printStackTrace();
 					} 
+		    		long pubDate = System.currentTimeMillis();
+		    		final String url = String.format(httpInserUserURL, userId, firstName, lastName, pubDate);
+		    		System.out.println("send request:  " + url);
+		    		
+					HttpResponse responseStream;
+					HttpGet httpPost = new HttpGet(url);
+		    		try {
+						responseStream = httpClient.execute(httpPost);
+						System.out.println(responseStream.getEntity().getContent().toString());
+						responseStream.getEntity().consumeContent();
+					} catch (ClientProtocolException e) {
+				        // TODO Auto-generated catch block
+						System.out.println("can't connect to insert ppl");
+				    } catch (IOException e) {
+				        // TODO Auto-generated catch block
+				    } 
 				}
     		};
     		Thread submitDataThread = new Thread(rr);
