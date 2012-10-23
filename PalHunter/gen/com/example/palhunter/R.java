@@ -60,3 +60,5 @@ public final class R {
         public static final int AppTheme=0x7f050000;
     }
 }
+
+//R file modified
