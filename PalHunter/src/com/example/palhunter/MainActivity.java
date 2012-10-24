@@ -20,21 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends Activity {
-/*
-	TextView latitute;
-	TextView longitute;
-	EditText nameText;
-	Date myDate;
-	Timestamp myTimestamp;
-	String userName = "team17";
-	String password = "palhunter";
-	
-	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
-    String httpPostURL = "http://hamedaan.usc.edu:8080/team17/PostServlet?FIRST_NAME=%s&LAST_NAME=%s&CREATED_TIME=%d";
-    String httpQueryURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet";
-	Handler handler; 
-*/		
+public class MainActivity extends Activity {	
 	
 	public void CreateUser(View view) {
 		System.out.println("create user");
