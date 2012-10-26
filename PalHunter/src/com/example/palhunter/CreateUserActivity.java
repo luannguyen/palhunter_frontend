@@ -1,6 +1,8 @@
 package com.example.palhunter;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -32,12 +34,13 @@ public class CreateUserActivity extends Activity {
 	String userName = "team17";
 	String password = "palhunter1";
 	
+	
 	public final static String EXTRA_MESSAGE = "com.example.palhunter.MESSAGE";
-	HttpClient httpClient = new DefaultHttpClient();
     String httpInserUserURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?id=%d&first_name=%s&last_name=%s&created_time=%d&action=insertPeople";
     final String httpGetUserNumQuery = "http://hamedaan.usc.edu:8080/team17/QueryServlet?action=getTotalPeople";
     String firstName, lastName;
 	Handler handler; 
+	HttpClient httpClient = new DefaultHttpClient();
 	
     public void SubmitData(View view) {
     	System.out.println("submit data");
@@ -61,9 +64,11 @@ public class CreateUserActivity extends Activity {
 		    		HttpResponse response;
 		    		try {
 						response = httpClient.execute(getUserNumUrl);
-						System.out.println("get user number response: " + response.getEntity().getContent().toString());
+						userId = User.getTotalUserNumber(response);
+		                   
+					//	System.out.println("get user number response: " + response.getEntity().getContent().toString());
 					//	userId = Integer.parseInt(response.getEntity().getContent().toString());
-						userId = 10;
+						
 						response.getEntity().consumeContent();
 					} catch (Exception e) {
 						System.out.println("cant get total user number");
