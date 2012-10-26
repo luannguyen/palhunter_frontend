@@ -14,12 +14,12 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
@@ -27,9 +27,10 @@ import com.google.android.maps.OverlayItem;
 public class MyLocation extends MapActivity {
 	LocationItemizedOverlay itemizedoverlay;
 	List<Overlay> mapOverlays;
+	MapController mapController;
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
 	
-    String httpPostURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%l";
+    String httpPostURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
     Integer userId;
     
     @Override
@@ -45,6 +46,8 @@ public class MyLocation extends MapActivity {
  //       getActionBar().setDisplayHomeAsUpEnabled(true);
         MapView mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
+        mapController = mapView.getController();
+        
         
         mapOverlays = mapView.getOverlays();
         Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
@@ -86,6 +89,9 @@ public class MyLocation extends MapActivity {
     	
 		public void onLocationChanged(Location location) {
 			// TODO Auto-generated method stub
+			System.out.println("latitude: " + location.getLatitude());
+			System.out.println("longtitude: " + location.getLongitude());
+
 			latitudeValue = (int)(location.getLatitude()* 1000000);
 			longitudeValue = (int)(location.getLongitude()*1000000);
 			
@@ -94,6 +100,7 @@ public class MyLocation extends MapActivity {
 			
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);
+			mapController.animateTo(myPoint);
 //			myTimestamp = new Timestamp(myDate.getTime());
     		long pubDate = System.currentTimeMillis();
 
@@ -124,7 +131,6 @@ public class MyLocation extends MapActivity {
 
 		public void onProviderEnabled(String provider) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		public void onStatusChanged(String provider, int status, Bundle extras) {

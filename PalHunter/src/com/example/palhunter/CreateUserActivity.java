@@ -9,13 +9,13 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,8 +61,9 @@ public class CreateUserActivity extends Activity {
 		    		HttpResponse response;
 		    		try {
 						response = httpClient.execute(getUserNumUrl);
-						System.out.println(response.getEntity().getContent().toString());
-						userId = Integer.parseInt(response.getEntity().getContent().toString());
+						System.out.println("get user number response: " + response.getEntity().getContent().toString());
+					//	userId = Integer.parseInt(response.getEntity().getContent().toString());
+						userId = 10;
 						response.getEntity().consumeContent();
 					} catch (Exception e) {
 						System.out.println("cant get total user number");
@@ -76,7 +77,7 @@ public class CreateUserActivity extends Activity {
 					HttpGet httpPost = new HttpGet(url);
 		    		try {
 						responseStream = httpClient.execute(httpPost);
-						System.out.println(responseStream.getEntity().getContent().toString());
+						System.out.println(EntityUtils.toString(responseStream.getEntity()));
 						responseStream.getEntity().consumeContent();
 					} catch (ClientProtocolException e) {
 				        // TODO Auto-generated catch block
