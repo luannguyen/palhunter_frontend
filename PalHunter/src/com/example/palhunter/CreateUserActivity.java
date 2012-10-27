@@ -97,9 +97,9 @@ public class CreateUserActivity extends Activity {
     	}
     	
 		Intent intent = new Intent(this, MyLocation.class);
-		String message = userId.toString();
-		intent.putExtra(EXTRA_MESSAGE, message);
-		
+		intent.putExtra("id", userId);
+		intent.putExtra("firstName", firstName);
+		intent.putExtra("lastName", lastName);
 		startActivity(intent);
     }
     

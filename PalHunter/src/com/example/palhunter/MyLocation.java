@@ -31,15 +31,18 @@ public class MyLocation extends MapActivity {
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
 	
     String httpPostURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
+    User myUser;
     Integer userId;
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
     	
     	Intent intent = getIntent();
-    	String message = intent.getStringExtra(CreateUserActivity.EXTRA_MESSAGE);
-    	userId = Integer.parseInt(message);
+    	Bundle b = intent.getExtras();
+    	myUser.userId = b.getInt("id");
+    	myUser.firstName = b.getString("firstName");
+    	myUser.lastName = b.getString("lastName");
+    	userId = myUser.userId;
     	
         setContentView(R.layout.activity_my_location);
         
@@ -120,6 +123,7 @@ public class MyLocation extends MapActivity {
 					} 
 				}
     		};
+    		
     		Thread submitDataThread = new Thread(rr);
     		submitDataThread.start();
 		}

@@ -36,54 +36,48 @@ public class LogInActivity extends Activity {
 	Timestamp myTimestamp;
 	String userName = "team17";
 	String password = "palhunter1";
+	User myUser;
 	
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
     String httpQueryURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?id=%d&action=queryPeopleId";
+    String httpQueryUserIDURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?" +
+    		"first_name=%s&last_name=%s&action=queryPeopleName";
 	
-    private class RetrieveDataTask extends AsyncTask <String, Void, List<UserMessage>> {
-    	InputStream responseStream ;
-		@Override
-		protected List<UserMessage> doInBackground(String... arg0) {
-			final String url = String.format(httpQueryURL, userId);
-			HttpGet httpGet = new HttpGet(url);
-	    	
-	    	try {
-	    		
-	    		responseStream = httpClient.execute(httpGet).getEntity().getContent();
-	    		
-	    		BufferedReader reader = new BufferedReader(new InputStreamReader(responseStream));
-	    	    StringBuilder sb = new StringBuilder();
-	    	    String line = null;
-
-	    	    while ((line = reader.readLine()) != null) {
-	    	        sb.append(line);
-	    	    }
-	    	    
-	    	    JSONArray jsonArray = new JSONArray(sb.toString());
-	    	    int size = jsonArray.length();
-	    	    
-	    	    List<UserMessage> records = new ArrayList<UserMessage>();
-	    	    
-	    	    System.out.println("USER LIST");
-	    	    for (int i = 0; i < size; i++) {
-	    	    	JSONObject jo = jsonArray.getJSONObject(i);
-	    	            records.add(new UserMessage(jo.getString("username").toString(),jo.getString("message").toString(), Long.parseLong(jo.getString("pubdate").toString())));
-	    	            System.out.println(jo.getString("username").toString() + " " + jo.getString("message").toString() + " " + Long.parseLong(jo.getString("pubdate").toString()));
-	    	    }
-	    	    
-	    		
-	    		return records;
-	    	} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			} 
-			
-		}
+    public void LogIn(View view) {
+		final Runnable rr = new Runnable() {
+			public void run() {
+		    	try {
+		    	InputStream responseStream ;
+				String firstName, lastName;
+				
+		    	firstNameText = (EditText)findViewById(R.id.first_name_login);
+		    	firstName = firstNameText.getText().toString().trim();
+		    	
+		    	lastNameText = (EditText)findViewById(R.id.last_name_login);
+		    	lastName = lastNameText.getText().toString().trim();
+		    	
+				final String url = String.format(httpQueryUserIDURL, firstName, lastName);
+				HttpGet httpGet = new HttpGet(url);
+		
+		    		responseStream = httpClient.execute(httpGet).getEntity().getContent();
+		    		myUser.getUser(responseStream);
+		    		
+		    	} catch (Exception e) {
+					e.printStackTrace();
+					return;
+				} 
+			}
+		};
+		Thread retriveDataThread = new Thread(rr);
+		retriveDataThread.start();
    }
     
    public void CreateNewAccount(View view)
    {
 		Intent intent = new Intent(this, CreateUserActivity.class);
+		intent.putExtra("id", myUser.userId);
+		intent.putExtra("firstName", myUser.firstName);
+		intent.putExtra("lastName", myUser.lastName);
 		startActivity(intent);
    }
     
@@ -91,6 +85,7 @@ public class LogInActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
+        myUser = new User();
     
     }
 
