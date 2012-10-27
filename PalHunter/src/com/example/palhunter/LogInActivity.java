@@ -1,32 +1,19 @@
 package com.example.palhunter;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import com.palhunter.object.UserMessage;
-
-import android.net.http.AndroidHttpClient;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.os.Handler;
 import android.app.Activity;
 import android.content.Intent;
+import android.net.http.AndroidHttpClient;
+import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 public class LogInActivity extends Activity {
 
@@ -47,17 +34,17 @@ public class LogInActivity extends Activity {
 		final Runnable rr = new Runnable() {
 			public void run() {
 		    	try {
-		    	InputStream responseStream ;
-				String firstName, lastName;
-				
-		    	firstNameText = (EditText)findViewById(R.id.first_name_login);
-		    	firstName = firstNameText.getText().toString().trim();
-		    	
-		    	lastNameText = (EditText)findViewById(R.id.last_name_login);
-		    	lastName = lastNameText.getText().toString().trim();
-		    	
-				final String url = String.format(httpQueryUserIDURL, firstName, lastName);
-				HttpGet httpGet = new HttpGet(url);
+			    	InputStream responseStream ;
+					String firstName, lastName;
+					
+			    	firstNameText = (EditText)findViewById(R.id.first_name_login);
+			    	firstName = firstNameText.getText().toString().trim();
+			    	
+			    	lastNameText = (EditText)findViewById(R.id.last_name_login);
+			    	lastName = lastNameText.getText().toString().trim();
+			    	
+					final String url = String.format(httpQueryUserIDURL, firstName, lastName);
+					HttpGet httpGet = new HttpGet(url);
 		
 		    		responseStream = httpClient.execute(httpGet).getEntity().getContent();
 		    		myUser.getUser(responseStream);
@@ -70,14 +57,17 @@ public class LogInActivity extends Activity {
 		};
 		Thread retriveDataThread = new Thread(rr);
 		retriveDataThread.start();
+		
+		Intent intent = new Intent(this, MyLocation.class);
+		intent.putExtra("id", myUser.userId);
+		intent.putExtra("firstName", myUser.firstName);
+		intent.putExtra("lastName", myUser.lastName);
+		startActivity(intent);
    }
     
    public void CreateNewAccount(View view)
    {
 		Intent intent = new Intent(this, CreateUserActivity.class);
-		intent.putExtra("id", myUser.userId);
-		intent.putExtra("firstName", myUser.firstName);
-		intent.putExtra("lastName", myUser.lastName);
 		startActivity(intent);
    }
     
