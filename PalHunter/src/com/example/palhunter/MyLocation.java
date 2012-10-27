@@ -36,7 +36,7 @@ public class MyLocation extends MapActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
-    	
+    	myUser = new User();
     	Intent intent = getIntent();
     	Bundle b = intent.getExtras();
     	myUser.userId = b.getInt("id");

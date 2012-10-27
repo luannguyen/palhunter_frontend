@@ -64,7 +64,7 @@ public class CreateUserActivity extends Activity {
 		    		HttpResponse response;
 		    		try {
 						response = httpClient.execute(getUserNumUrl);
-						userId = User.getTotalUserNumber(response);
+						userId = User.getTotalUserNumber(response) + 1;
 		                   
 					//	System.out.println("get user number response: " + response.getEntity().getContent().toString());
 					//	userId = Integer.parseInt(response.getEntity().getContent().toString());
