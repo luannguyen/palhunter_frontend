@@ -2,9 +2,10 @@ package com.example.palhunter;
 
 import java.util.List;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -23,19 +24,24 @@ import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class MyLocation extends MapActivity {
 	LocationItemizedOverlay itemizedoverlay;
 	List<Overlay> mapOverlays;
 	MapController mapController;
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
-	
-    String httpPostURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
+    String httpPostURL = "action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
+    String httpGetMyLocations = "id=%d&action=queryPastLocations";
     User myUser;
     Integer userId;
+    MyLocationHandler handler;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_my_location);
+        
     	myUser = new User();
     	Intent intent = getIntent();
     	Bundle b = intent.getExtras();
@@ -43,8 +49,7 @@ public class MyLocation extends MapActivity {
     	myUser.firstName = b.getString("firstName");
     	myUser.lastName = b.getString("lastName");
     	userId = myUser.userId;
-    	
-        setContentView(R.layout.activity_my_location);
+    	handler = new MyLocationHandler();
         
  //       getActionBar().setDisplayHomeAsUpEnabled(true);
         MapView mapView = (MapView) findViewById(R.id.mapview);
@@ -60,6 +65,8 @@ public class MyLocation extends MapActivity {
         LocationListener ll = new myLocationListener();
         
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,ll); 
+        
+        loadMyPastLocations();
     }
 
     @Override
@@ -87,6 +94,10 @@ public class MyLocation extends MapActivity {
         return false;
     }
 
+    protected void loadMyPastLocations() {
+    	final String getMyLocationsURL = String.format(httpGetMyLocations, myUser.userId);
+    	DatabaseClient.get(getMyLocationsURL, null, handler);
+    }
     private class myLocationListener implements LocationListener {
     	int latitudeValue, longitudeValue;
     	
@@ -99,33 +110,20 @@ public class MyLocation extends MapActivity {
 			longitudeValue = (int)(location.getLongitude()*1000000);
 			
 			GeoPoint myPoint = new GeoPoint(latitudeValue,longitudeValue);
-			OverlayItem overlayitem = new OverlayItem(myPoint, "hello!", "I'm in san mateo!");
+			OverlayItem overlayitem = new OverlayItem(myPoint, "hello!", "my location");
 			
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);
 			mapController.animateTo(myPoint);
 //			myTimestamp = new Timestamp(myDate.getTime());
-    		long pubDate = System.currentTimeMillis();
+    		long pubTime = System.currentTimeMillis();
 
-    		final String url = String.format(httpPostURL, userId, latitudeValue, longitudeValue,pubDate);
-    		System.out.println(" send request:  " + url);
-    		
-    		final Runnable rr = new Runnable() {
-				public void run() {
-					HttpResponse responseStream;
-		    		HttpPost httpPost = new HttpPost(url);
-		    		try {
-						responseStream = httpClient.execute(httpPost);
-						System.out.println(responseStream.getEntity().getContent());
-					} catch (Exception e) {
-						System.out.println("cant connect to server to insert location information");
-						e.printStackTrace();
-					} 
-				}
-    		};
-    		
-    		Thread submitDataThread = new Thread(rr);
-    		submitDataThread.start();
+			UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,pubTime);
+			myUser.addUserLoctaion(currentLocation);
+    		final String url = String.format(httpPostURL, userId, latitudeValue, longitudeValue,pubTime);
+
+    		DatabaseClient.get(url, null, null);
+
 		}
 
 		public void onProviderDisabled(String provider) {
@@ -143,4 +141,41 @@ public class MyLocation extends MapActivity {
 		}
     	
     }
+    
+    private class MyLocationHandler extends JsonHttpResponseHandler {
+
+	    public MyLocationHandler()
+	    {
+	        super();
+	    }
+	    
+		public void onSuccess(JSONArray locationArray) {
+			int i = 0;
+			int latitudeValue,longitudeValue;
+			long time; 
+			System.out.println("get my past location handler on Success");
+			try {
+				for(i=0; i<locationArray.length(); i++) {
+					
+					JSONObject location = locationArray.getJSONObject(i);
+					
+					latitudeValue = location.getInt("LAT_INT");
+					longitudeValue = location.getInt("LONG_INT");
+					time = location.getLong("UPDATED_TIME");
+					
+					UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,time);
+					myUser.myPastLocations.add(currentLocation);
+
+				//	GeoPoint myPoint = new GeoPoint(latitudeValue,longitudeValue);
+					
+					OverlayItem overlayitem = new OverlayItem((currentLocation.getLocationPoint()), "point" + i, "");			
+					itemizedoverlay.addOverlay(overlayitem);
+					mapOverlays.add(itemizedoverlay);
+				}
+			} catch (JSONException e) {
+				System.out.println("jsonarray failed to get location points");
+			}
+		}
+	}
+    
 }

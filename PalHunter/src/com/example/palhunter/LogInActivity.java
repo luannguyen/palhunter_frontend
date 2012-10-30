@@ -6,6 +6,11 @@ import java.util.Date;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,45 +29,33 @@ public class LogInActivity extends Activity {
 	String userName = "team17";
 	String password = "palhunter1";
 	User myUser;
-	
+	LogInHandler handler;
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
-    String httpQueryURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?id=%d&action=queryPeopleId";
-    String httpQueryUserIDURL = "http://hamedaan.usc.edu:8080/team17/QueryServlet?" +
-    		"first_name=%s&last_name=%s&action=queryPeopleName";
+    String httpQueryURL = "id=%d&action=queryPeopleId";
+    String httpQueryUserByIdURL = "first_name=%s&last_name=%s&action=queryPeopleName";
 	
     public void LogIn(View view) {
-		final Runnable rr = new Runnable() {
-			public void run() {
-		    	try {
-			    	InputStream responseStream ;
-					String firstName, lastName;
-					
-			    	firstNameText = (EditText)findViewById(R.id.first_name_login);
-			    	firstName = firstNameText.getText().toString().trim();
-			    	
-			    	lastNameText = (EditText)findViewById(R.id.last_name_login);
-			    	lastName = lastNameText.getText().toString().trim();
-			    	
-					final String url = String.format(httpQueryUserIDURL, firstName, lastName);
-					HttpGet httpGet = new HttpGet(url);
-		
-		    		responseStream = httpClient.execute(httpGet).getEntity().getContent();
-		    		myUser.getUser(responseStream);
-		    		
-		    	} catch (Exception e) {
-					e.printStackTrace();
-					return;
-				} 
-			}
-		};
-		Thread retriveDataThread = new Thread(rr);
-		retriveDataThread.start();
-		
-		Intent intent = new Intent(this, MyLocation.class);
-		intent.putExtra("id", myUser.userId);
-		intent.putExtra("firstName", myUser.firstName);
-		intent.putExtra("lastName", myUser.lastName);
-		startActivity(intent);
+
+    	try {
+	    	InputStream responseStream ;
+			String firstName, lastName;
+			
+	    	firstNameText = (EditText)findViewById(R.id.first_name_login);
+	    	firstName = firstNameText.getText().toString().trim();
+	    	
+	    	lastNameText = (EditText)findViewById(R.id.last_name_login);
+	    	lastName = lastNameText.getText().toString().trim();
+	    
+	    	myUser.firstName = firstName;
+	    	myUser.lastName = lastName;
+			final String url = String.format(httpQueryUserByIdURL, firstName, lastName);
+			
+			DatabaseClient.get(url, null, handler);
+    		
+    	} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		} 
    }
     
    public void CreateNewAccount(View view)
@@ -76,6 +69,7 @@ public class LogInActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
         myUser = new User();
+        handler = new LogInHandler();
     
     }
 
@@ -85,5 +79,28 @@ public class LogInActivity extends Activity {
         return true;
     }
     
-    
+	private class LogInHandler extends JsonHttpResponseHandler {
+
+	    public LogInHandler()
+	    {
+	        super();
+	    }
+	    
+		public void onSuccess(JSONArray userArray) {
+			System.out.println("log in handler on Success");
+			try {			
+				JSONObject userObject = userArray.getJSONObject(0);
+				myUser.userId = userObject.getInt("PID");
+				System.out.println("login got userId = " + userId);								
+			} catch (JSONException e) {
+				System.out.println("login handler on success failed to get user id");
+			}
+			Intent intent = new Intent(LogInActivity.this, MyLocation.class);
+			intent.putExtra("id", myUser.userId);
+			intent.putExtra("firstName", myUser.firstName);
+			intent.putExtra("lastName", myUser.lastName);
+			startActivity(intent);	
+		}
+	}
+	    
 }
