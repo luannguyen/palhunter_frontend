@@ -1,9 +1,8 @@
 package com.example.palhunter;
 
-import android.os.Handler;
-
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 
 public class DatabaseClient {
@@ -11,7 +10,7 @@ public class DatabaseClient {
 
   private static AsyncHttpClient client = new AsyncHttpClient();
 
-  public static void get(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
+  public static void get(String url, RequestParams params, JsonHttpResponseHandler responseHandler) {
 	  System.out.println("get request: " + getAbsoluteUrl(url));
 	  if(params == null)
 		  client.get(getAbsoluteUrl(url), responseHandler);

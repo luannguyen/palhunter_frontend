@@ -45,11 +45,14 @@ public final class R {
     public static final class string {
         public static final int android_api_key=0x7f04000a;
         public static final int app_name=0x7f040000;
+        public static final int cancel=0x7f04000e;
         public static final int create_button=0x7f040007;
         public static final int create_new_account=0x7f040005;
         public static final int hello_world=0x7f040001;
         public static final int log_in=0x7f040006;
         public static final int menu_settings=0x7f040002;
+        public static final int no_account_alert=0x7f04000c;
+        public static final int ok=0x7f04000d;
         public static final int title_activity_create_user=0x7f040004;
         public static final int title_activity_log_in=0x7f04000b;
         public static final int title_activity_main=0x7f040003;

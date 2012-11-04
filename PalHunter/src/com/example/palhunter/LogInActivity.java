@@ -1,30 +1,27 @@
 package com.example.palhunter;
 
-import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import android.app.Activity;
 import android.content.Intent;
 import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.View;
 import android.widget.EditText;
 
-public class LogInActivity extends Activity {
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+public class LogInActivity extends FragmentActivity {
 
 	EditText firstNameText, lastNameText;
 	Date myDate;
-	int userId;
 	Timestamp myTimestamp;
 	String userName = "team17";
 	String password = "palhunter1";
@@ -37,7 +34,6 @@ public class LogInActivity extends Activity {
     public void LogIn(View view) {
 
     	try {
-	    	InputStream responseStream ;
 			String firstName, lastName;
 			
 	    	firstNameText = (EditText)findViewById(R.id.first_name_login);
@@ -88,19 +84,26 @@ public class LogInActivity extends Activity {
 	    
 		public void onSuccess(JSONArray userArray) {
 			System.out.println("log in handler on Success");
-			try {			
-				JSONObject userObject = userArray.getJSONObject(0);
-				myUser.userId = userObject.getInt("PID");
-				System.out.println("login got userId = " + userId);								
-			} catch (JSONException e) {
-				System.out.println("login handler on success failed to get user id");
+			if(userArray.length() == 1) {
+				try {			
+					
+					JSONObject userObject = userArray.getJSONObject(0);
+					myUser.userId = userObject.getInt("PID");
+					System.out.println("login got userId = " + myUser.userId);								
+				} catch (JSONException e) {
+					System.out.println("login handler on success failed to get user id");
+				}
+				
+				Intent intent = new Intent(LogInActivity.this, MyLocation.class);
+				intent.putExtra("id", myUser.userId);
+				intent.putExtra("firstName", myUser.firstName);
+				intent.putExtra("lastName", myUser.lastName);
+				startActivity(intent);	
 			}
-			Intent intent = new Intent(LogInActivity.this, MyLocation.class);
-			intent.putExtra("id", myUser.userId);
-			intent.putExtra("firstName", myUser.firstName);
-			intent.putExtra("lastName", myUser.lastName);
-			startActivity(intent);	
+			else {
+				MyAlertDialogFragment alertDialogFragment = new MyAlertDialogFragment();
+				alertDialogFragment.show(getSupportFragmentManager(), "no account alert");
+			}
 		}
-	}
-	    
+	}  
 }

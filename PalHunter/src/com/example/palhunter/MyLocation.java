@@ -27,6 +27,7 @@ import com.google.android.maps.OverlayItem;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class MyLocation extends MapActivity {
+	MapView mapView;
 	LocationItemizedOverlay itemizedoverlay;
 	List<Overlay> mapOverlays;
 	MapController mapController;
@@ -52,22 +53,23 @@ public class MyLocation extends MapActivity {
     	handler = new MyLocationHandler();
         
  //       getActionBar().setDisplayHomeAsUpEnabled(true);
-        MapView mapView = (MapView) findViewById(R.id.mapview);
+        mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
+
         mapController = mapView.getController();
-        
-        
         mapOverlays = mapView.getOverlays();
         Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
         itemizedoverlay = new LocationItemizedOverlay(drawable, this);
         
+        loadMyPastLocations();
+        
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         LocationListener ll = new myLocationListener();
         
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,ll); 
-        
-        loadMyPastLocations();
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10,ll); 
     }
+    
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -98,13 +100,14 @@ public class MyLocation extends MapActivity {
     	final String getMyLocationsURL = String.format(httpGetMyLocations, myUser.userId);
     	DatabaseClient.get(getMyLocationsURL, null, handler);
     }
+    
     private class myLocationListener implements LocationListener {
     	int latitudeValue, longitudeValue;
     	
 		public void onLocationChanged(Location location) {
 			// TODO Auto-generated method stub
-			System.out.println("latitude: " + location.getLatitude());
-			System.out.println("longtitude: " + location.getLongitude());
+			//System.out.println("latitude: " + location.getLatitude());
+			//System.out.println("longtitude: " + location.getLongitude());
 
 			latitudeValue = (int)(location.getLatitude()* 1000000);
 			longitudeValue = (int)(location.getLongitude()*1000000);
@@ -114,12 +117,15 @@ public class MyLocation extends MapActivity {
 			
 			itemizedoverlay.addOverlay(overlayitem);
 			mapOverlays.add(itemizedoverlay);
+			
 			mapController.animateTo(myPoint);
+			mapController.setZoom(17);
 //			myTimestamp = new Timestamp(myDate.getTime());
     		long pubTime = System.currentTimeMillis();
 
 			UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,pubTime);
 			myUser.addUserLoctaion(currentLocation);
+			
     		final String url = String.format(httpPostURL, userId, latitudeValue, longitudeValue,pubTime);
 
     		DatabaseClient.get(url, null, null);
@@ -142,11 +148,30 @@ public class MyLocation extends MapActivity {
     	
     }
     
-    private class MyLocationHandler extends JsonHttpResponseHandler {
+    private final class MyLocationHandler extends JsonHttpResponseHandler {
 
 	    public MyLocationHandler()
 	    {
 	        super();
+	    }
+	    public void onFailure(Throwable e,
+                JSONObject errorResponse) {
+	    	System.out.println("get past location on failure jsonobject");
+	    	System.out.print(errorResponse.keys().toString());
+	    }
+	    public void onFailure(Throwable e,
+                JSONArray errorResponse) {
+	    	System.out.println("get past location on failure jsonarray");
+	    	try {
+	    	for(int i=0; i<errorResponse.length(); i++) {
+	    		System.out.print(errorResponse.getJSONObject(i).keys().toString());
+	    	}
+	    	}catch (JSONException ee) {
+				System.out.println("jsonarray failed to get location points");
+			}
+	    }
+	    public void onSuccess(JSONObject locationObject) {
+	    	System.out.println("get past location on success jsonobject");
 	    }
 	    
 		public void onSuccess(JSONArray locationArray) {
@@ -163,19 +188,20 @@ public class MyLocation extends MapActivity {
 					longitudeValue = location.getInt("LONG_INT");
 					time = location.getLong("UPDATED_TIME");
 					
+					System.out.println("add a new geoPoint lat :" + latitudeValue
+							+ " long: " + longitudeValue);
 					UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,time);
 					myUser.myPastLocations.add(currentLocation);
 
 				//	GeoPoint myPoint = new GeoPoint(latitudeValue,longitudeValue);
-					
 					OverlayItem overlayitem = new OverlayItem((currentLocation.getLocationPoint()), "point" + i, "");			
 					itemizedoverlay.addOverlay(overlayitem);
-					mapOverlays.add(itemizedoverlay);
 				}
+				mapOverlays.add(itemizedoverlay);
+				mapView.invalidate();
 			} catch (JSONException e) {
 				System.out.println("jsonarray failed to get location points");
 			}
 		}
 	}
-    
 }

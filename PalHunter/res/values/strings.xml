@@ -13,5 +13,8 @@
     <string name="title_activity_my_path">MyPath</string>
     <string name="android_api_key">0W4EwH5Ey6PU6tiCpR3QDXuoN9cTeFdv6rdm6Ow</string>
     <string name="title_activity_log_in">LogInActivity</string>
+    <string name="no_account_alert">Can not find the user! Please input your name and try again</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel and exit</string>
 
 </resources>

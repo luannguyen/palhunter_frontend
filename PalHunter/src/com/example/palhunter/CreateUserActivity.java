@@ -52,7 +52,6 @@ public class CreateUserActivity extends Activity {
 			int totalUserNum = 0;
 			System.out.println("here on Success");
 			try {
-				
 				JSONObject firstValue = userNumArray.getJSONObject(0);
 				totalUserNum = firstValue.getInt("TOTAL");
 				userId = totalUserNum+1;
