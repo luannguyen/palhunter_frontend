@@ -13,7 +13,7 @@
 	    android:layout_height="fill_parent"
 	    android:layout_alignParentLeft="true"
 	    android:layout_toLeftOf="@+id/listView1" 
-	    android:apiKey="0W4EwH5Ey6PU6tiCpR3QDXuoN9cTeFdv6rdm6Ow"
+	    android:apiKey="0chXDg4Omfe2clUO32gTkjTGpBbdbNTvQkOG-dw"
 	    android:clickable="true" />
 
 	<ListView
