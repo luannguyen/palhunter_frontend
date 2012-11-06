@@ -109,6 +109,7 @@ public class MyLocation extends MapActivity {
 			//System.out.println("latitude: " + location.getLatitude());
 			//System.out.println("longtitude: " + location.getLongitude());
 
+			System.out.println("on location change");
 			latitudeValue = (int)(location.getLatitude()* 1000000);
 			longitudeValue = (int)(location.getLongitude()*1000000);
 			
@@ -150,17 +151,12 @@ public class MyLocation extends MapActivity {
     
     private final class MyLocationHandler extends JsonHttpResponseHandler {
 
-	    public MyLocationHandler()
-	    {
-	        super();
-	    }
 	    public void onFailure(Throwable e,
                 JSONObject errorResponse) {
 	    	System.out.println("get past location on failure jsonobject");
 	    	System.out.print(errorResponse.keys().toString());
 	    }
-	    public void onFailure(Throwable e,
-                JSONArray errorResponse) {
+	    public void onFailure(Throwable e, JSONArray errorResponse) {
 	    	System.out.println("get past location on failure jsonarray");
 	    	try {
 	    	for(int i=0; i<errorResponse.length(); i++) {
@@ -170,6 +166,7 @@ public class MyLocation extends MapActivity {
 				System.out.println("jsonarray failed to get location points");
 			}
 	    }
+	    
 	    public void onSuccess(JSONObject locationObject) {
 	    	System.out.println("get past location on success jsonobject");
 	    }
@@ -178,7 +175,8 @@ public class MyLocation extends MapActivity {
 			int i = 0;
 			int latitudeValue,longitudeValue;
 			long time; 
-			System.out.println("get my past location handler on Success");
+			System.out.println("get my past location handler on Success, there are "+ 
+			locationArray.length() + " past locations");
 			try {
 				for(i=0; i<locationArray.length(); i++) {
 					
@@ -197,8 +195,7 @@ public class MyLocation extends MapActivity {
 					OverlayItem overlayitem = new OverlayItem((currentLocation.getLocationPoint()), "point" + i, "");			
 					itemizedoverlay.addOverlay(overlayitem);
 				}
-				mapOverlays.add(itemizedoverlay);
-				mapView.invalidate();
+				mapOverlays.add(itemizedoverlay);				
 			} catch (JSONException e) {
 				System.out.println("jsonarray failed to get location points");
 			}
