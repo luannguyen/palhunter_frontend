@@ -6,11 +6,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
-import android.os.Handler;
-import android.os.Message;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 

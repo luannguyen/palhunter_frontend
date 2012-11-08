@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,7 +21,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 
 public class CreateUserActivity extends Activity {
@@ -63,6 +63,15 @@ public class CreateUserActivity extends Activity {
 		    	
 				Intent intent = new Intent(CreateUserActivity.this, MyLocation.class);
 				System.out.println("id " + userId + " firstName " + firstName + " lastName " + lastName);
+			
+			    SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
+			    SharedPreferences.Editor editor = settings.edit();
+			    editor.putBoolean("login", true);
+				editor.putInt("id", userId);			  
+			    editor.putString("firstName", firstName);
+				editor.putString("lastName", lastName);
+			    editor.commit();
+
 				intent.putExtra("id", userId);
 				intent.putExtra("firstName", firstName);
 				intent.putExtra("lastName", lastName);

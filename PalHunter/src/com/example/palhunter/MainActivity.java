@@ -1,27 +1,15 @@
 package com.example.palhunter;
 
-import java.sql.Timestamp;
-import java.util.Date;
-
-import org.apache.http.client.HttpClient;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.net.http.AndroidHttpClient;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {	
-	
+	public static final String PREFS_NAME = "MyUserCookieFile";
 	public void CreateUser(View view) {
 		Intent intent = new Intent(this, CreateUserActivity.class);
 		startActivity(intent);
@@ -32,9 +20,20 @@ public class MainActivity extends Activity {
     }
 	
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {    	
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);      
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        boolean cachedUser = settings.getBoolean("login", false);
+        if(cachedUser == true) {
+			Intent intent = new Intent(this, MyLocation.class);
+			intent.putExtra("id", settings.getInt("userId", 0));
+			intent.putExtra("firstName", settings.getString("firstName",""));
+			intent.putExtra("lastName", settings.getString("lastName", ""));
+			startActivity(intent);	
+        }
+        else {
+        	setContentView(R.layout.activity_main);      
+        }
     }
 
     @Override
