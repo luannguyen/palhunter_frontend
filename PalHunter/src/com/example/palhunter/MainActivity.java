@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
         boolean cachedUser = settings.getBoolean("login", false);
+ /* 
         if(cachedUser == true) {
 			Intent intent = new Intent(this, MyLocation.class);
 			intent.putExtra("id", settings.getInt("userId", 0));
@@ -32,8 +33,8 @@ public class MainActivity extends Activity {
 			startActivity(intent);	
         }
         else {
-        	setContentView(R.layout.activity_main);      
-        }
+   */     	setContentView(R.layout.activity_main);      
+    //    }
     }
 
     @Override
