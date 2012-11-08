@@ -5,6 +5,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id = "@+id/namebox"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
@@ -19,21 +22,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName" />
-
+		</LinearLayout>
             <Button
                 android:id="@+id/create_user_button"
-                android:layout_width="196dp"
+                android:layout_below="@+id/namebox"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SubmitData"
-                android:text="@string/create_button" />
-
+                android:text="@string/create_new_account" />
+
             <Button
                 android:id="@+id/button1"
-                android:layout_width="192dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/create_user_button"
                 android:onClick="BackToLogin"
-                android:text="LogIn" />
+                android:text="@string/log_in" />
 
-        </LinearLayout>
-
+       
 </RelativeLayout>

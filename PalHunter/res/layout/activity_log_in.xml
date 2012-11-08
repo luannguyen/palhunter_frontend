@@ -1,8 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-
+    android:layout_height="match_parent"
+    android:background="@drawable/main_background"
+    android:gravity="center_horizontal" >
+
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
@@ -11,44 +13,43 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="66dp"
         android:onClick="LogIn"
-        android:text="Log In" />
-
+        android:text="@string/log_in" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="17dp"
+        android:onClick="CreateNewAccount"
+        android:text="@string/create_new_account" />
+
     <LinearLayout
+        android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
         android:orientation="vertical" >
 
         <EditText
             android:id="@+id/first_name_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
+            android:layout_gravity="center_horizontal"
             android:ems="10"
-            android:hint="first name"
-            android:inputType="textPersonName" >
-        </EditText>
+            android:hint="@string/first_name"
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/last_name_login"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/editText1"
-            android:layout_marginTop="22dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="42dp"
             android:ems="10"
-            android:hint="last name"
+            android:hint="@string/last_name"
             android:inputType="textPersonName" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/button_login"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="17dp"
-        android:onClick="CreateNewAccount"
-        android:text="Create New Account" />
 
 </RelativeLayout>
