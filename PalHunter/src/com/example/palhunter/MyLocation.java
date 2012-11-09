@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -17,6 +18,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -37,7 +39,6 @@ public class MyLocation extends MapActivity {
     User myUser;
     Integer userId;
     MyLocationHandler handler;
-    
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -52,6 +53,9 @@ public class MyLocation extends MapActivity {
     	userId = myUser.userId;
     	handler = new MyLocationHandler();
         
+    	TextView textView = (TextView)findViewById(R.id.textView1);
+    	textView.setText(myUser.firstName + " " + myUser.lastName);
+    	
  //       getActionBar().setDisplayHomeAsUpEnabled(true);
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
@@ -74,6 +78,10 @@ public class MyLocation extends MapActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_my_location, menu);
+        menu.add(R.string.log_out);
+        menu.add(R.string.friend_list);
+        menu.add(R.string.my_past_location);
+        
         return true;
     }
 
@@ -81,15 +89,25 @@ public class MyLocation extends MapActivity {
     @Override
  
     public boolean onOptionsItemSelected(MenuItem item) {
-/*
+
     	switch (item.getItemId()) {
-            case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
-                return true;
+            case R.string.log_out:
+            	SharedPreferences settings = getSharedPreferences(MainActivity.myPrefence, 0);
+            	SharedPreferences.Editor e = settings.edit();
+            	e.putBoolean("logged", false);
+            	e.commit();
+            	Intent intent = new Intent(this, MainActivity.class);
+            	startActivity(intent);
+            	break;
+            case R.string.my_past_location:
+            	//switch to my past location activity
+            	break;
+            case R.string.friend_list:
+            	//switch to add/delete friend activity
+            	break;
         }
-*/        
-        return super.onOptionsItemSelected(item);
-    }
+    	return true;
+     }
     
     @Override
     protected boolean isRouteDisplayed() {

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -93,6 +94,13 @@ public class LogInActivity extends FragmentActivity {
 				} catch (JSONException e) {
 					System.out.println("login handler on success failed to get user id");
 				}
+				SharedPreferences settings = getSharedPreferences(MainActivity.myPrefence,0);
+				SharedPreferences.Editor e = settings.edit();
+				e.putBoolean("logged", true);
+				e.putInt("id", myUser.userId);
+				e.putString("firstName", myUser.firstName);
+				e.putString("lastName", myUser.lastName);
+				e.commit();
 				
 				Intent intent = new Intent(LogInActivity.this, MyLocation.class);
 				intent.putExtra("id", myUser.userId);

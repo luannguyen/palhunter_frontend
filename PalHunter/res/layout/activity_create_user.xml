@@ -1,27 +1,33 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent" 
+    android:background="@drawable/main_background">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id = "@+id/namebox"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
-
+            android:orientation="vertical" 
+            android:layout_centerVertical="true"
+            >
+
             <EditText
                 android:id="@+id/first_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/first_name"
                 android:inputType="textPersonName" />
-
+
             <EditText
                 android:id="@+id/last_name"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:hint="@string/last_name"
                 android:inputType="textPersonName" />
+
 		</LinearLayout>
             <Button
                 android:id="@+id/create_user_button"
@@ -29,6 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:onClick="SubmitData"
+                android:layout_centerHorizontal="true"
                 android:text="@string/create_new_account" />
 
             <Button
@@ -36,6 +43,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/create_user_button"
+                android:layout_centerHorizontal="true"
                 android:onClick="BackToLogin"
                 android:text="@string/log_in" />
 

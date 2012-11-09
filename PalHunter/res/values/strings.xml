@@ -17,6 +17,9 @@
     <string name="title_activity_log_in">LogInActivity</string>
     <string name="no_account_alert">Can not find the user! Please input your name and try again</string>
     <string name="ok">OK</string>
+    <string name="log_out">log out</string>
+    <string name="my_past_location">show my past locations</string>
+    <string name="friend_list">friend list</string>
     <string name="cancel">Cancel and exit</string>
 
 </resources>
