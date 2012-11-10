@@ -23,18 +23,7 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-		SharedPreferences settings = getSharedPreferences(myPrefence, 0);
-        boolean logged = settings.getBoolean("logged", false);
-        if(logged == true) {
-			Intent intent = new Intent(MainActivity.this, MyLocation.class);
-			intent.putExtra("id", settings.getInt("id", 0));
-			intent.putExtra("firstName", settings.getString("firstName", ""));
-			intent.putExtra("lastName", settings.getString("lastName", ""));
-			startActivity(intent);
-        }  else {
-        	setContentView(R.layout.activity_main);
-        }
+
     }
 
     @Override
@@ -50,5 +39,22 @@ public class MainActivity extends Activity {
     
     public void onClick(View button) {
     	updateButton((Button) button);
+    }
+    
+    public void onStart() {
+    	super.onStart();
+    	 
+		SharedPreferences settings = getSharedPreferences(myPrefence, 0);
+        boolean logged = settings.getBoolean("logged", false);
+        if(logged == true) {
+			Intent intent = new Intent(MainActivity.this, MyLocation.class);
+			intent.putExtra("id", settings.getInt("id", 0));
+			intent.putExtra("firstName", settings.getString("firstName", ""));
+			intent.putExtra("lastName", settings.getString("lastName", ""));
+			startActivity(intent);
+        }  else { 
+        	setContentView(R.layout.activity_main);
+        }
+    	System.out.println("on start");	
     }
 }

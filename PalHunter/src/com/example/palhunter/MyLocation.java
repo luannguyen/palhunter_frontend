@@ -18,6 +18,8 @@ import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
@@ -36,9 +38,12 @@ public class MyLocation extends MapActivity {
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
     String httpPostURL = "action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
     String httpGetMyLocations = "id=%d&action=queryPastLocations";
+    String httpGetMyFriends = "id=%d&action=findAllFriends";
     User myUser;
     Integer userId;
     MyLocationHandler handler;
+    MyFriendsHandler friendsHander;
+    
     @Override
     public void onCreate(Bundle savedInstanceState) {
     	super.onCreate(savedInstanceState);
@@ -52,6 +57,7 @@ public class MyLocation extends MapActivity {
     	myUser.lastName = b.getString("lastName");
     	userId = myUser.userId;
     	handler = new MyLocationHandler();
+    	friendsHander = new MyFriendsHandler();
         
     	TextView textView = (TextView)findViewById(R.id.textView1);
     	textView.setText(myUser.firstName + " " + myUser.lastName);
@@ -71,8 +77,16 @@ public class MyLocation extends MapActivity {
         LocationListener ll = new myLocationListener();
         
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10,ll); 
+        
+        loadMyFriendList();
+
     }
     
+    public void loadMyFriendList()
+    {
+    	final String getMyFriendsURL = String.format(httpGetMyFriends, myUser.userId);
+    	DatabaseClient.get(getMyFriendsURL, null, friendsHander);
+    }
 
 
     @Override
@@ -87,7 +101,6 @@ public class MyLocation extends MapActivity {
 
     
     @Override
- 
     public boolean onOptionsItemSelected(MenuItem item) {
 
     	switch (item.getItemId()) {
@@ -97,16 +110,19 @@ public class MyLocation extends MapActivity {
             	e.putBoolean("logged", false);
             	e.commit();
             	Intent intent = new Intent(this, MainActivity.class);
+            	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             	startActivity(intent);
-            	break;
+            	return true;
+            	
             case R.string.my_past_location:
             	//switch to my past location activity
-            	break;
+            	return true;
             case R.string.friend_list:
             	//switch to add/delete friend activity
-            	break;
+            	return true;
         }
-    	return true;
+        return super.onOptionsItemSelected(item);
+
      }
     
     @Override
@@ -219,4 +235,39 @@ public class MyLocation extends MapActivity {
 			}
 		}
 	}
+    
+    private final class MyFriendsHandler extends JsonHttpResponseHandler {
+	    public void onSuccess(JSONObject locationObject) {
+	    	System.out.println("get past location on success jsonobject");
+	    }
+	    
+		public void onSuccess(JSONArray friendListArray) {
+			int i = 0;
+			try {
+				for(i=0; i<friendListArray.length(); i++) {
+					
+					User friend = new User();
+					JSONObject friendObj = friendListArray.getJSONObject(i);
+					friend.getUser(friendObj);
+					myUser.addFriend(friend);
+				}
+			} catch (Exception e) {
+				System.out.println("jsonarray failed to get location points");
+			}
+			
+			ListView friendList = (ListView)findViewById(R.id.listView1);
+			// First paramenter - Context
+			// Second parameter - Layout for the row
+			// Third parameter - ID of the TextView to which the data is written
+			// Forth - the Array of data
+			User[] myfriendsContents = new User[myUser.friendList.size()];
+			myUser.friendList.toArray(myfriendsContents);
+			ArrayAdapter<User> adapter = new ArrayAdapter<User>(MyLocation.this,
+					android.R.layout.simple_list_item_1, myfriendsContents);
+			// Assign adapter to ListView
+			friendList.setAdapter(adapter); 
+		}
+    }
+    
+
 }

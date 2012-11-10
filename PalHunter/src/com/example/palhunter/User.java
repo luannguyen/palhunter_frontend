@@ -19,12 +19,13 @@ public class User {
 	Integer userId;
 	String firstName, lastName;
 	long createdTime;
-	ArrayList<User> friends;
+	ArrayList<User> friendList;
 	ArrayList<UserLocation> myPastLocations;
 	static final int MAX_HISTORY_LOCATION_NUM = 100;
 	public User() {
 		// TODO Auto-generated constructor stub
 		myPastLocations = new ArrayList<UserLocation>();
+		friendList = new ArrayList<User>();
 	}
 
 	public void addUserLoctaion(UserLocation loc) {
@@ -36,27 +37,34 @@ public class User {
 		}
 	}
 	
-	public void getUser(InputStream responseStream) throws Exception {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				responseStream));
-		StringBuilder sb = new StringBuilder();
-		String line = null;
+	public void getUser(JSONObject jo) throws Exception {
+	try {
+		userId = Integer.parseInt(jo.getString("PID").toString());
+		firstName = jo.getString("FIRST_NAME").toString();
+		lastName = jo.getString("LAST_NAME").toString();
+		createdTime = Long.parseLong(jo.getString("CREATED_TIME")
+				.toString());
 
-		try {
-			while ((line = reader.readLine()) != null) {
-				sb.append(line);
-			}
-
-			JSONArray joa = new JSONArray(sb.toString());
-			JSONObject jo = joa.getJSONObject(0);
-			userId = Integer.parseInt(jo.getString("PID").toString());
-			firstName = jo.getString("FIRST_NAME").toString();
-			lastName = jo.getString("LAST_NAME").toString();
-			createdTime = Long.parseLong(jo.getString("CREATED_TIME")
-					.toString());
-
-		} catch (Exception e) {
-			throw e;
+	} catch (Exception e) {
+		throw e;
+	}
+	}
+	
+	//overwrite
+	public String toString()
+	{
+		return firstName + " " + lastName;
+	}
+	
+	public boolean addFriend(User user1)
+	{
+		if(friendList.contains(user1)) {
+			System.out.println("already have this friend in my friendlist");
+			return false;
+		}
+		else {
+			friendList.add(user1);
+			return true;
 		}
 	}
 
