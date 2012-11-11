@@ -22,5 +22,7 @@
 	<string name="friend_list">friend list</string>
 	<string name="cancel">Cancel and exit</string>
 	<string name="title_activity_map_query">MapQueryActivity</string>
-
+	<string name="current_location">"current location"</string>
+	<string name="past_location">past locations</string>
+	<string name="name">friend name</string>
 </resources>

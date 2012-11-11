@@ -18,8 +18,12 @@ import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.google.android.maps.GeoPoint;
@@ -30,7 +34,7 @@ import com.google.android.maps.Overlay;
 import com.google.android.maps.OverlayItem;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-public class MyLocation extends MapActivity {
+public class MyLocation extends MapActivity implements OnClickListener {
 	MapView mapView;
 	LocationItemizedOverlay itemizedoverlay;
 	List<Overlay> mapOverlays;
@@ -43,6 +47,9 @@ public class MyLocation extends MapActivity {
     Integer userId;
     MyLocationHandler handler;
     MyFriendsHandler friendsHander;
+    
+    static final int ON_CREATE = 1;
+    static final int ON_RESUME = 2;
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,23 +78,30 @@ public class MyLocation extends MapActivity {
         Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
         itemizedoverlay = new LocationItemizedOverlay(drawable, this);
         
-        loadMyPastLocations();
+        loadMyPastLocations(ON_CREATE);
         
         LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
         LocationListener ll = new myLocationListener();
         
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10,ll); 
         
-        loadMyFriendList();
+        loadMyFriendList(ON_CREATE);
 
     }
     
-    public void loadMyFriendList()
+    @Override
+    public void onPause()
     {
-    	final String getMyFriendsURL = String.format(httpGetMyFriends, myUser.userId);
-    	DatabaseClient.get(getMyFriendsURL, null, friendsHander);
+    	super.onPause();
     }
-
+    
+    @Override
+    public void onResume()
+    {
+    	super.onResume();
+        loadMyPastLocations(ON_RESUME);        
+        loadMyFriendList(ON_RESUME);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -130,9 +144,13 @@ public class MyLocation extends MapActivity {
         return false;
     }
 
-    protected void loadMyPastLocations() {
-    	final String getMyLocationsURL = String.format(httpGetMyLocations, myUser.userId);
-    	DatabaseClient.get(getMyLocationsURL, null, handler);
+    protected void loadMyPastLocations(int status) {
+    	if(status == ON_CREATE) {
+	    	final String getMyLocationsURL = String.format(httpGetMyLocations, myUser.userId);
+	    	DatabaseClient.get(getMyLocationsURL, null, handler);
+    	} else if(status == ON_RESUME) {
+    		
+    	}
     }
     
     private class myLocationListener implements LocationListener {
@@ -209,13 +227,14 @@ public class MyLocation extends MapActivity {
 			int i = 0;
 			int latitudeValue,longitudeValue;
 			long time; 
+			int tempId;
 			System.out.println("get my past location handler on Success, there are "+ 
 			locationArray.length() + " past locations");
 			try {
 				for(i=0; i<locationArray.length(); i++) {
 					
 					JSONObject location = locationArray.getJSONObject(i);
-					
+					tempId = location.getInt("PID");
 					latitudeValue = location.getInt("LAT_INT");
 					longitudeValue = location.getInt("LONG_INT");
 					time = location.getLong("UPDATED_TIME");
@@ -223,8 +242,9 @@ public class MyLocation extends MapActivity {
 					System.out.println("add a new geoPoint lat :" + latitudeValue
 							+ " long: " + longitudeValue);
 					UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,time);
-					myUser.myPastLocations.add(currentLocation);
-
+					if(tempId == myUser.userId){
+						myUser.myPastLocations.add(currentLocation);
+					}		
 				//	GeoPoint myPoint = new GeoPoint(latitudeValue,longitudeValue);
 					OverlayItem overlayitem = new OverlayItem((currentLocation.getLocationPoint()), "point" + i, "");			
 					itemizedoverlay.addOverlay(overlayitem);
@@ -235,6 +255,16 @@ public class MyLocation extends MapActivity {
 			}
 		}
 	}
+    
+    public void loadMyFriendList(int status)
+    {
+    	if(status == ON_CREATE) {
+	    	final String getMyFriendsURL = String.format(httpGetMyFriends, myUser.userId);
+	    	DatabaseClient.get(getMyFriendsURL, null, friendsHander);
+    	} else if(status == ON_RESUME) {
+    		
+    	}
+    }
     
     private final class MyFriendsHandler extends JsonHttpResponseHandler {
 	    public void onSuccess(JSONObject locationObject) {
@@ -255,19 +285,59 @@ public class MyLocation extends MapActivity {
 				System.out.println("jsonarray failed to get location points");
 			}
 			
-			ListView friendList = (ListView)findViewById(R.id.listView1);
+			final ListView friendList = (ListView)findViewById(R.id.listView1);
 			// First paramenter - Context
 			// Second parameter - Layout for the row
 			// Third parameter - ID of the TextView to which the data is written
 			// Forth - the Array of data
 			User[] myfriendsContents = new User[myUser.friendList.size()];
 			myUser.friendList.toArray(myfriendsContents);
-			ArrayAdapter<User> adapter = new ArrayAdapter<User>(MyLocation.this,
+			FriendListAdapter adapter = new FriendListAdapter(MyLocation.this,
 					android.R.layout.simple_list_item_1, myfriendsContents);
 			// Assign adapter to ListView
 			friendList.setAdapter(adapter); 
+			
+			friendList.setOnItemClickListener(new OnItemClickListener() {
+		        public void onItemClick(AdapterView<?> parent, View view,
+		                int position, long id) {
+		        
+		        int userId = myUser.friendList.get(position).userId;
+		       
+		        switch(view.getId()){
+		        case R.id.friendNameView:
+		        	break;
+		        case R.id.currentLocation:
+		        	boolean checked = ((RadioButton) view).isChecked();
+	                if (checked) {
+	                    MyMapLocationManager.showUserCurrentLocation(userId);
+	                } else {
+	                	MyMapLocationManager.hideUserCurrentLocation(userId);
+	                }
+	                break;
+		        case R.id.pastLocations:
+		        	checked = ((RadioButton) view).isChecked();
+	                if (checked) {
+	                    MyMapLocationManager.showUserPastLocation(userId);
+	                } else {
+	                	MyMapLocationManager.hideUserPastLocation(userId);
+	                }
+	                break;
+		        } 
+		        }
+		    });
+			
 		}
+		
     }
     
-
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch(v.getId()) {
+			case(R.id.friendNameView) :
+				
+			
+		}
+		
+	}
+    
 }
