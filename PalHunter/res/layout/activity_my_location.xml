@@ -11,7 +11,7 @@
 	    android:layout_height="fill_parent"
 	    android:layout_alignParentLeft="true"
 	    android:layout_toLeftOf="@+id/listView1" 
-	    android:apiKey="0W4EwH5Ey6PU6tiCpR3QDXuoN9cTeFdv6rdm6Ow"
+	    android:apiKey="0chXDg4Omfe2clUO32gTkjTGpBbdbNTvQkOG-dw"
 	    android:clickable="true" />
 
 	<ListView
@@ -21,5 +21,16 @@
 	    android:layout_alignParentRight="true"
 	    android:layout_alignParentTop="true" >
 	</ListView>
+	
+		<Button
+	    android:id="@+id/button1"
+	    style="?android:attr/buttonStyleSmall"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentTop="true"
+	    android:layout_centerHorizontal="true"
+	    android:layout_marginTop="14dp"
+	    android:text="@string/edit"
+		android:onClick="EditFriends"/>
 	
 </RelativeLayout>

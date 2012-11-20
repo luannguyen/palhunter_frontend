@@ -17,6 +17,7 @@ import android.net.http.AndroidHttpClient;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
@@ -34,9 +35,16 @@ public class MyLocation extends MapActivity {
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
     String httpPostURL = "action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
     String httpGetMyLocations = "id=%d&action=queryPastLocations";
+    String httpGetMyFriendList = "id=%d&action=findAllFriends";
     User myUser;
     Integer userId;
     MyLocationHandler handler;
+    MyFriendManagerHandler handlerFriend;
+    
+	public void EditFriends(View view) {
+    	final String getFriendList = String.format(httpGetMyFriendList, myUser.userId);
+    	DatabaseClient.get(getFriendList, null, handlerFriend);
+	}
     
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,7 +59,8 @@ public class MyLocation extends MapActivity {
     	myUser.lastName = b.getString("lastName");
     	userId = myUser.userId;
     	handler = new MyLocationHandler();
-        
+    	handlerFriend = new MyFriendManagerHandler();
+    	
  //       getActionBar().setDisplayHomeAsUpEnabled(true);
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
@@ -149,6 +158,42 @@ public class MyLocation extends MapActivity {
     	
     }
     
+    private final class MyFriendManagerHandler extends JsonHttpResponseHandler {
+
+	    public void onFailure(Throwable e,
+                JSONObject errorResponse) {
+	    	System.out.println("get friend list on failure jsonobject");
+	    	System.out.print(errorResponse.keys().toString());
+	    }
+	    public void onFailure(Throwable e, JSONArray errorResponse) {
+	    	System.out.println("get friend list on failure jsonarray");
+	    	try {
+	    	for(int i=0; i<errorResponse.length(); i++) {
+	    		System.out.print(errorResponse.getJSONObject(i).keys().toString());
+	    	}
+	    	}catch (JSONException ee) {
+				System.out.println("jsonarray failed to get friend list");
+			}
+	    }
+	    
+	    public void onSuccess(JSONObject locationObject) {
+	    	System.out.println("get friend list on success jsonobject");
+	    }
+	    
+		public void onSuccess(JSONArray friendsArray) {
+			System.out.println("get my friend list handler on Success, there are "+ 
+			friendsArray.length() + " friends");
+			System.out.println(friendsArray.toString());
+			Intent intent = new Intent(MyLocation.this, FriendManagerActivity.class);
+			intent.putExtra("id", myUser.userId);
+			intent.putExtra("firstName", myUser.firstName);
+			intent.putExtra("lastName", myUser.lastName);
+			intent.putExtra("friends", friendsArray.toString());
+			startActivity(intent);			
+
+		}
+	}
+    
     private final class MyLocationHandler extends JsonHttpResponseHandler {
 
 	    public void onFailure(Throwable e,
@@ -201,4 +246,6 @@ public class MyLocation extends MapActivity {
 			}
 		}
 	}
+    
+    
 }

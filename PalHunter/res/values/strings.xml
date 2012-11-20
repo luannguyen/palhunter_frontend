@@ -19,5 +19,14 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel and exit</string>
     <string name="title_activity_friend_list">FriendListActivity</string>
-
+    <string name="edit">EDIT</string>
+    <string name="title_activity_friend_manager">FriendManagerActivity</string>
+    <string name="lblBtnAdd">Add Item</string>
+    <string name="txtEmpty">List is empty</string>
+    <string name="lblBtnDel">Delete Selected Items</string>
+    <string name="remove_friends">Remove Friends</string>
+    <string name="add_friends">Add Friends</string>
+    <string name="friend_list">friend List</string>
+    <string name="add_more_friends">Add more friends</string>
+    <string name="title_activity_add_more_friends">AddMoreFriendsActivity</string>
 </resources>
