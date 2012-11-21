@@ -1,5 +1,6 @@
 package com.example.palhunter;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.apache.http.client.HttpClient;
@@ -20,33 +21,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 
-import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapActivity;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
-import com.google.android.maps.OverlayItem;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class MyLocation extends MapActivity implements OnClickListener {
 	MapView mapView;
-	LocationItemizedOverlay itemizedoverlay;
 	List<Overlay> mapOverlays;
 	MapController mapController;
+	HashMap<Integer, User>userList;
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
     String httpPostURL = "action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
     String httpGetMyLocations = "id=%d&action=queryPastLocations";
     String httpGetMyFriends = "id=%d&action=findAllFriends";
     User myUser;
-    Integer userId;
-    MyLocationHandler handler;
+
     MyFriendsHandler friendsHander;
+    MyLocationHandler locationHandler;
+    Drawable drawable;
     
     static final int ON_CREATE = 1;
     static final int ON_RESUME = 2;
@@ -56,27 +53,31 @@ public class MyLocation extends MapActivity implements OnClickListener {
     	super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_location);
         
-    	myUser = new User();
+        drawable = this.getResources().getDrawable(R.drawable.androidmarker);
+
+    	
+    	locationHandler = new MyLocationHandler();
+    	friendsHander = new MyFriendsHandler();
+    	userList = new HashMap<Integer, User>();
+    	
+    	myUser = new User(drawable, this, locationHandler);
     	Intent intent = getIntent();
     	Bundle b = intent.getExtras();
     	myUser.userId = b.getInt("id");
     	myUser.firstName = b.getString("firstName");
     	myUser.lastName = b.getString("lastName");
-    	userId = myUser.userId;
-    	handler = new MyLocationHandler();
-    	friendsHander = new MyFriendsHandler();
-        
+    	
+        userList.put(myUser.userId, myUser);
     	TextView textView = (TextView)findViewById(R.id.textView1);
     	textView.setText(myUser.firstName + " " + myUser.lastName);
     	
- //       getActionBar().setDisplayHomeAsUpEnabled(true);
         mapView = (MapView) findViewById(R.id.mapview);
         mapView.setBuiltInZoomControls(true);
 
         mapController = mapView.getController();
         mapOverlays = mapView.getOverlays();
-        Drawable drawable = this.getResources().getDrawable(R.drawable.androidmarker);
-        itemizedoverlay = new LocationItemizedOverlay(drawable, this);
+        MyMapLocationManager.mapOverlays = mapOverlays;
+        MyMapLocationManager.mapview = mapView;
         
         loadMyPastLocations(ON_CREATE);
         
@@ -144,43 +145,20 @@ public class MyLocation extends MapActivity implements OnClickListener {
         return false;
     }
 
-    protected void loadMyPastLocations(int status) {
-    	if(status == ON_CREATE) {
-	    	final String getMyLocationsURL = String.format(httpGetMyLocations, myUser.userId);
-	    	DatabaseClient.get(getMyLocationsURL, null, handler);
-    	} else if(status == ON_RESUME) {
-    		
-    	}
-    }
-    
     private class myLocationListener implements LocationListener {
     	int latitudeValue, longitudeValue;
-    	
+    	long pubTime;
 		public void onLocationChanged(Location location) {
-			// TODO Auto-generated method stub
-			//System.out.println("latitude: " + location.getLatitude());
-			//System.out.println("longtitude: " + location.getLongitude());
 
 			System.out.println("on location change");
 			latitudeValue = (int)(location.getLatitude()* 1000000);
 			longitudeValue = (int)(location.getLongitude()*1000000);
-			
-			GeoPoint myPoint = new GeoPoint(latitudeValue,longitudeValue);
-			OverlayItem overlayitem = new OverlayItem(myPoint, "hello!", "my location");
-			
-			itemizedoverlay.addOverlay(overlayitem);
-			mapOverlays.add(itemizedoverlay);
-			
-			mapController.animateTo(myPoint);
-			mapController.setZoom(17);
-//			myTimestamp = new Timestamp(myDate.getTime());
-    		long pubTime = System.currentTimeMillis();
+    		pubTime = System.currentTimeMillis();
 
-			UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,pubTime);
-			myUser.addUserLoctaion(currentLocation);
+			myUser.addLocation(latitudeValue,longitudeValue, pubTime);
 			
-    		final String url = String.format(httpPostURL, userId, latitudeValue, longitudeValue,pubTime);
-
+			//insert new location to database
+    		final String url = String.format(httpPostURL, myUser.userId, latitudeValue, longitudeValue,pubTime);
     		DatabaseClient.get(url, null, null);
 
 		}
@@ -201,61 +179,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
     	
     }
     
-    private final class MyLocationHandler extends JsonHttpResponseHandler {
-
-	    public void onFailure(Throwable e,
-                JSONObject errorResponse) {
-	    	System.out.println("get past location on failure jsonobject");
-	    	System.out.print(errorResponse.keys().toString());
-	    }
-	    public void onFailure(Throwable e, JSONArray errorResponse) {
-	    	System.out.println("get past location on failure jsonarray");
-	    	try {
-	    	for(int i=0; i<errorResponse.length(); i++) {
-	    		System.out.print(errorResponse.getJSONObject(i).keys().toString());
-	    	}
-	    	}catch (JSONException ee) {
-				System.out.println("jsonarray failed to get location points");
-			}
-	    }
-	    
-	    public void onSuccess(JSONObject locationObject) {
-	    	System.out.println("get past location on success jsonobject");
-	    }
-	    
-		public void onSuccess(JSONArray locationArray) {
-			int i = 0;
-			int latitudeValue,longitudeValue;
-			long time; 
-			int tempId;
-			System.out.println("get my past location handler on Success, there are "+ 
-			locationArray.length() + " past locations");
-			try {
-				for(i=0; i<locationArray.length(); i++) {
-					
-					JSONObject location = locationArray.getJSONObject(i);
-					tempId = location.getInt("PID");
-					latitudeValue = location.getInt("LAT_INT");
-					longitudeValue = location.getInt("LONG_INT");
-					time = location.getLong("UPDATED_TIME");
-					
-					System.out.println("add a new geoPoint lat :" + latitudeValue
-							+ " long: " + longitudeValue);
-					UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue,time);
-					if(tempId == myUser.userId){
-						myUser.myPastLocations.add(currentLocation);
-					}		
-				//	GeoPoint myPoint = new GeoPoint(latitudeValue,longitudeValue);
-					OverlayItem overlayitem = new OverlayItem((currentLocation.getLocationPoint()), "point" + i, "");			
-					itemizedoverlay.addOverlay(overlayitem);
-				}
-				mapOverlays.add(itemizedoverlay);				
-			} catch (JSONException e) {
-				System.out.println("jsonarray failed to get location points");
-			}
-		}
-	}
-    
+      
     public void loadMyFriendList(int status)
     {
     	if(status == ON_CREATE) {
@@ -275,11 +199,14 @@ public class MyLocation extends MapActivity implements OnClickListener {
 			int i = 0;
 			try {
 				for(i=0; i<friendListArray.length(); i++) {
-					
-					User friend = new User();
+				
+					User friend = new User(drawable, MyLocation.this, locationHandler);
 					JSONObject friendObj = friendListArray.getJSONObject(i);
 					friend.getUser(friendObj);
+					friend.queryPastLocationFromServer();
 					myUser.addFriend(friend);
+					System.out.println("friend " + i + " id: " + friend.userId);
+					userList.put(friend.userId, friend);
 				}
 			} catch (Exception e) {
 				System.out.println("jsonarray failed to get location points");
@@ -297,39 +224,100 @@ public class MyLocation extends MapActivity implements OnClickListener {
 			// Assign adapter to ListView
 			friendList.setAdapter(adapter); 
 			
+			
+/*			
 			friendList.setOnItemClickListener(new OnItemClickListener() {
 		        public void onItemClick(AdapterView<?> parent, View view,
 		                int position, long id) {
 		        
-		        int userId = myUser.friendList.get(position).userId;
-		       
+		        User myFriend = myUser.friendList.get(position);
+		        System.out.println("selected friend id: "+ position);
+		        System.out.println("view id: "+ view.getId());
 		        switch(view.getId()){
 		        case R.id.friendNameView:
 		        	break;
-		        case R.id.currentLocation:
+		        case R.id.currentLocationRadioBtn:
 		        	boolean checked = ((RadioButton) view).isChecked();
 	                if (checked) {
-	                    MyMapLocationManager.showUserCurrentLocation(userId);
+	                    MyMapLocationManager.showUserCurrentLocation(myUser);
 	                } else {
-	                	MyMapLocationManager.hideUserCurrentLocation(userId);
+	                	MyMapLocationManager.hideUserCurrentLocation(myUser);
 	                }
 	                break;
-		        case R.id.pastLocations:
+		        case R.id.pastLocationRadioBtn:
 		        	checked = ((RadioButton) view).isChecked();
 	                if (checked) {
-	                    MyMapLocationManager.showUserPastLocation(userId);
+	                    MyMapLocationManager.showUserPastLocation(myFriend);
 	                } else {
-	                	MyMapLocationManager.hideUserPastLocation(userId);
+	                	MyMapLocationManager.hideUserPastLocation(myFriend);
 	                }
 	                break;
 		        } 
 		        }
 		    });
-			
+	*/	
 		}
-		
+	
     }
     
+    protected void loadMyPastLocations(int status) {
+    	if(status == ON_CREATE) {
+	    	myUser.queryPastLocationFromServer();
+	    	
+    	} else if(status == ON_RESUME) {
+    		
+    	}
+    }
+	  public final class MyLocationHandler extends JsonHttpResponseHandler {
+
+		    public void onFailure(Throwable e,
+	                JSONObject errorResponse) {
+		    	System.out.println("get past location on failure jsonobject");
+		    	System.out.print(errorResponse.keys().toString());
+		    }
+		    public void onFailure(Throwable e, JSONArray errorResponse) {
+		    	System.out.println("get past location on failure jsonarray");
+		    	try {
+		    	for(int i=0; i<errorResponse.length(); i++) {
+		    		System.out.print(errorResponse.getJSONObject(i).keys().toString());
+		    	}
+		    	}catch (JSONException ee) {
+					System.out.println("jsonarray failed to get location points");
+				}
+		    }
+		    
+		    public void onSuccess(JSONObject locationObject) {
+		    	System.out.println("get past location on success jsonobject");
+		    }
+		    
+			public void onSuccess(JSONArray locationArray) {
+				int i = 0;
+				int latitudeValue,longitudeValue, pid;
+				long time; 
+				System.out.println("get my past location handler on Success, there are "+ 
+				locationArray.length() + " past locations");
+				User user = myUser;
+				try {
+					for(i=0; i<locationArray.length(); i++) {
+						
+						JSONObject location = locationArray.getJSONObject(i);
+						pid = location.getInt("PID");
+						latitudeValue = location.getInt("LAT_INT");
+						longitudeValue = location.getInt("LONG_INT");
+						time = location.getLong("UPDATED_TIME");
+						user = userList.get(pid);	
+						System.out.println("add a new geoPoint lat :" + latitudeValue
+								+ " long: " + longitudeValue);
+						user.addLocation(latitudeValue, longitudeValue, time);	
+					}	
+
+				} catch (JSONException e) {
+					System.out.println("jsonarray failed to get location points");
+				}
+				user.locationInMemory = true;
+				mapOverlays.add(user.getLocationItemizedOverlay());
+			}
+		}
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch(v.getId()) {

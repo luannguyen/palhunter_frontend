@@ -9,9 +9,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.os.Handler;
-import android.os.Message;
+import android.R.drawable;
+import android.content.Context;
+import android.graphics.drawable.Drawable;
 
+import com.google.android.maps.GeoPoint;
+import com.google.android.maps.OverlayItem;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class User {
@@ -21,33 +24,34 @@ public class User {
 	long createdTime;
 	ArrayList<User> friendList;
 	ArrayList<UserLocation> myPastLocations;
+	LocationItemizedOverlay myLocationOveraly;
+	Context myContext;
+	Drawable myDrawable;
+	boolean locationInMemory;
+	boolean friendsInMemory;
+	MyLocation.MyLocationHandler locationHandler;
+	
 	static final int MAX_HISTORY_LOCATION_NUM = 100;
-	public User() {
+	public User(Drawable drawable, Context context,MyLocation.MyLocationHandler handler) {
 		// TODO Auto-generated constructor stub
 		myPastLocations = new ArrayList<UserLocation>();
-		friendList = new ArrayList<User>();
-	}
-
-	public void addUserLoctaion(UserLocation loc) {
-		if(myPastLocations.size() < MAX_HISTORY_LOCATION_NUM) {
-			myPastLocations.add(loc);
-		}
-		else {
-			//location buffer is full, delete the oldest location history
-		}
+		friendList = new ArrayList<User>();		
+		myLocationOveraly = new LocationItemizedOverlay(drawable, context);
+		myContext = context;
+		myDrawable = drawable;
+		locationInMemory = false;
+		locationHandler = handler; 
 	}
 	
 	public void getUser(JSONObject jo) throws Exception {
-	try {
-		userId = Integer.parseInt(jo.getString("PID").toString());
-		firstName = jo.getString("FIRST_NAME").toString();
-		lastName = jo.getString("LAST_NAME").toString();
-		createdTime = Long.parseLong(jo.getString("CREATED_TIME")
-				.toString());
-
-	} catch (Exception e) {
-		throw e;
-	}
+		try {
+			userId = Integer.parseInt(jo.getString("PID").toString());
+			firstName = jo.getString("FIRST_NAME").toString();
+			lastName = jo.getString("LAST_NAME").toString();
+			createdTime = Long.parseLong(jo.getString("CREATED_TIME").toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	//overwrite
@@ -67,7 +71,31 @@ public class User {
 			return true;
 		}
 	}
-
+	
+	public void addLocation(int latitudeValue, int longitudeValue, long time)
+	{
+		UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue, time);
+		myPastLocations.add(currentLocation);
+		GeoPoint myPoint = new GeoPoint(latitudeValue, longitudeValue);
+		OverlayItem overlayitem = new OverlayItem(myPoint, firstName, lastName); 
+		myLocationOveraly.addOverlay(overlayitem);
+	}
+	
+	public LocationItemizedOverlay getLocationItemizedOverlay() {
+		return myLocationOveraly;
+	}
+	
+	public LocationItemizedOverlay getCurrentLocation() {
+		System.out.println("get current location");
+		LocationItemizedOverlay curLocationOverlay = new LocationItemizedOverlay(myDrawable, myContext);
+		if(myPastLocations.size() > 0) {
+			System.out.println("my last location");
+			GeoPoint myLastLocation = myPastLocations.get(myPastLocations.size()-1).getLocationPoint();		
+			curLocationOverlay.addOverlay(new OverlayItem(myLastLocation, firstName, lastName));
+		}
+		return curLocationOverlay;
+	}
+	
 	/*
 	 * public void showPastLocations(LocationItemizedOverlay itemizedoverlay) {
 	 * int i; for(i=0; i<myPastLocations.) }
@@ -107,24 +135,14 @@ public class User {
 
 		DatabaseClient.get("action=getTotalPeople", null, myHandler);
 
-		/*
-		 * int userNum = 0; BufferedReader in; in = new BufferedReader(new
-		 * InputStreamReader(response.getEntity().getContent())); StringBuffer
-		 * sb = new StringBuffer(""); String line = ""; String NL =
-		 * System.getProperty("line.separator"); try { while ((line =
-		 * in.readLine()) != null) { sb.append(line + NL); } in.close();
-		 * }catch(IOException e){throw e;}
-		 * 
-		 * String queryResponseStr = sb.toString();
-		 * System.out.println(queryResponseStr);
-		 * 
-		 * //{"TOTAL":"6"} String[] tokens1 = queryResponseStr.split(":");
-		 * String[] tokens2 = tokens1[1].split("\""); try { userNum =
-		 * Integer.parseInt(tokens2[1]);
-		 * System.out.println("parse succeed! user number: "+ userNum); } catch
-		 * (Exception e ) { System.out.println("parse failed"); }
-		 * 
-		 * return userNum;
-		 */}
+	}
+	
+	public void queryPastLocationFromServer()
+	{
+	    String httpGetMyLocations = "id=%d&action=queryPastLocations";
+    	final String getMyLocationsURL = String.format(httpGetMyLocations, userId);
+    	DatabaseClient.get(getMyLocationsURL, null, locationHandler);
+	}
+
 
 }

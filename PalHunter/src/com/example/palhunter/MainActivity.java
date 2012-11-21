@@ -55,6 +55,5 @@ public class MainActivity extends Activity {
         }  else { 
         	setContentView(R.layout.activity_main);
         }
-    	System.out.println("on start");	
     }
 }

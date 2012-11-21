@@ -23,6 +23,7 @@ public class LocationItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 	    myOverlays.add(overlay);
 	    populate();
 	}
+	
 	@Override
 	protected OverlayItem createItem(int i) {
 		// TODO Auto-generated method stub

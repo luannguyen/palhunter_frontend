@@ -7,13 +7,18 @@
 
 	<TextView
 		android:id="@+id/friendNameView"
-		android:layout_width="0dp"
+		android:layout_width="0dip"
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
 		android:text="@string/name"/>
 
+	<RadioGroup 
+	android:layout_height="wrap_content"
+	android:layout_width="250dp"
+    android:orientation="horizontal"
+    android:id="@+id/radio_group1">
 	<RadioButton
-		android:id="@+id/currentLocation"
+		android:id="@+id/currentLocationRadioBtn"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
@@ -22,11 +27,11 @@
 	/>
 
 	<RadioButton
-		android:id="@+id/pastLocations"
+		android:id="@+id/pastLocationRadioBtn"
 		android:layout_width="0dp"
 		android:layout_height="wrap_content"
 		android:layout_weight="1"
 		android:text="@string/past_location"
 		android:onClick="onRadioButtonClicked"/>
-
+	</RadioGroup>
 </LinearLayout>
