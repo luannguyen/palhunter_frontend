@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:background="@drawable/main_background"
     android:gravity="center_horizontal" >
-
+
+
     <Button
         android:id="@+id/button_login"
         android:layout_width="wrap_content"
@@ -14,7 +15,7 @@
         android:layout_marginBottom="66dp"
         android:onClick="LogIn"
         android:text="@string/log_in" />
-
+
     <Button
         android:id="@+id/button1"
         android:layout_width="wrap_content"
@@ -24,7 +25,7 @@
         android:layout_marginBottom="17dp"
         android:onClick="CreateNewAccount"
         android:text="@string/create_new_account" />
-
+
     <LinearLayout
         android:id="@+id/linearLayout1"
         android:layout_width="fill_parent"

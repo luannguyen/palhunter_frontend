@@ -35,11 +35,15 @@ public class MyLocation extends MapActivity implements OnClickListener {
 	List<Overlay> mapOverlays;
 	MapController mapController;
 	HashMap<Integer, User>userList;
+	MyMapLocationManager mapLocationManager;
+	
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
     String httpPostURL = "action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
     String httpGetMyLocations = "id=%d&action=queryPastLocations";
     String httpGetMyFriends = "id=%d&action=findAllFriends";
     User myUser;
+    
+    
 
     MyFriendsHandler friendsHander;
     MyLocationHandler locationHandler;
@@ -68,7 +72,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
     	myUser.lastName = b.getString("lastName");
     	
         userList.put(myUser.userId, myUser);
-    	TextView textView = (TextView)findViewById(R.id.textView1);
+    	TextView textView = (TextView)findViewById(R.id.nameFeild);
     	textView.setText(myUser.firstName + " " + myUser.lastName);
     	
         mapView = (MapView) findViewById(R.id.mapview);
@@ -76,8 +80,8 @@ public class MyLocation extends MapActivity implements OnClickListener {
 
         mapController = mapView.getController();
         mapOverlays = mapView.getOverlays();
-        MyMapLocationManager.mapOverlays = mapOverlays;
-        MyMapLocationManager.mapview = mapView;
+        
+        mapLocationManager = new MyMapLocationManager(mapOverlays, mapView);
         
         loadMyPastLocations(ON_CREATE);
         
@@ -221,6 +225,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
 			myUser.friendList.toArray(myfriendsContents);
 			FriendListAdapter adapter = new FriendListAdapter(MyLocation.this,
 					android.R.layout.simple_list_item_1, myfriendsContents);
+			adapter.mapLocationManager = mapLocationManager;
 			// Assign adapter to ListView
 			friendList.setAdapter(adapter); 
 			
@@ -327,5 +332,13 @@ public class MyLocation extends MapActivity implements OnClickListener {
 		}
 		
 	}
-    
+	
+	public void ManageFriends(View v) {
+		Intent i = new Intent();
+		Bundle b = new Bundle();
+		b.putParcelable(User.USER_TYPE, myUser);
+		i.putExtras(b);
+		i.setClass(this, FriendManagerActivity.class);
+		startActivity(i);
+	}
 }

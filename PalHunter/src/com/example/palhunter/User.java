@@ -6,18 +6,18 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.R.drawable;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.android.maps.GeoPoint;
 import com.google.android.maps.OverlayItem;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
-public class User {
+public class User implements Parcelable{
 
 	Integer userId;
 	String firstName, lastName;
@@ -30,6 +30,7 @@ public class User {
 	boolean locationInMemory;
 	boolean friendsInMemory;
 	MyLocation.MyLocationHandler locationHandler;
+	static final String USER_TYPE = "my user";
 	
 	static final int MAX_HISTORY_LOCATION_NUM = 100;
 	public User(Drawable drawable, Context context,MyLocation.MyLocationHandler handler) {
@@ -41,6 +42,12 @@ public class User {
 		myDrawable = drawable;
 		locationInMemory = false;
 		locationHandler = handler; 
+	}
+	
+	public User() {
+		myPastLocations = new ArrayList<UserLocation>();
+		friendList = new ArrayList<User>();	
+		locationInMemory = false;
 	}
 	
 	public void getUser(JSONObject jo) throws Exception {
@@ -72,6 +79,31 @@ public class User {
 		}
 	}
 	
+	public boolean removeFriend(User user1) {
+		if(friendList.contains(user1)) {
+			friendList.remove(user1);
+			return true;
+		} else {
+			System.out.println("removing non-exsiting friend");
+			if(user1 == null ) {
+				System.out.println("user1 == null");
+			} else {
+				System.out.println("user name: " + user1.firstName);
+			}
+			return false;
+		}
+	}
+	
+	public boolean removeFriend(Integer removeId) {
+		for(int i=0; i<friendList.size(); i++) {
+			if(friendList.get(i).userId == removeId) {
+				friendList.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public void addLocation(int latitudeValue, int longitudeValue, long time)
 	{
 		UserLocation currentLocation = new UserLocation(latitudeValue,longitudeValue, time);
@@ -96,15 +128,6 @@ public class User {
 		return curLocationOverlay;
 	}
 	
-	/*
-	 * public void showPastLocations(LocationItemizedOverlay itemizedoverlay) {
-	 * int i; for(i=0; i<myPastLocations.) }
-	 */
-	/*
-	 * public ArrayList<User> getUserFriends() {
-	 * 
-	 * }
-	 */
 	public void getLocations(InputStream responseStream) throws Exception {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
 				responseStream));
@@ -144,5 +167,54 @@ public class User {
     	DatabaseClient.get(getMyLocationsURL, null, locationHandler);
 	}
 
+    public int describeContents() {
+        return 0;
+    }
+
+    /*
+     * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
+     * 	Integer userId;
+	String firstName, lastName;
+	long createdTime;
+	ArrayList<User> friendList;
+	ArrayList<UserLocation> myPastLocations;
+	LocationItemizedOverlay myLocationOveraly;
+	Context myContext;
+	Drawable myDrawable;
+	boolean locationInMemory;
+	boolean friendsInMemory;
+	MyLocation.MyLocationHandler locationHandler;
+     */
+    public void writeToParcel(Parcel out, int flags) {
+    	out.writeStringArray(new String[] {firstName, lastName});
+    	out.writeLong(createdTime);
+    	out.writeList(friendList);
+    	out.writeList(myPastLocations);
+    }
+    
+    public User(Parcel in) {
+    	String [] data = new String[2];
+    	in.readStringArray(data);
+    	firstName = data[0];
+    	lastName = data[1];
+    	createdTime = in.readLong();
+    	
+    	friendList = new ArrayList<User>();
+    	in.readList(friendList,null);
+    	
+    	myPastLocations = new ArrayList<UserLocation>();
+    	in.readList(myPastLocations, null);
+    }
+
+    public static final Parcelable.Creator<User> CREATOR
+            = new Parcelable.Creator<User>() {
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };    
 
 }

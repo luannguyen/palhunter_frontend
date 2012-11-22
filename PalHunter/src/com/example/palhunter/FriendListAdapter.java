@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 public class FriendListAdapter extends ArrayAdapter<User> {
 	User[] myUserList; 
+	MyMapLocationManager mapLocationManager;
 	
 	private LayoutInflater myInflater;
 	public FriendListAdapter(Context context, int textViewResourceId) {
@@ -97,9 +98,9 @@ public class FriendListAdapter extends ArrayAdapter<User> {
 	            boolean checked = ((RadioButton) view).isChecked();
 	            
                 if (checked) {
-                    MyMapLocationManager.showUserCurrentLocation(user);
+                	mapLocationManager.showUserCurrentLocation(user);
                 } else {
-                	MyMapLocationManager.hideUserCurrentLocation(user);
+                	mapLocationManager.hideUserCurrentLocation(user);
                 }
 	        }
 	    };
@@ -117,9 +118,9 @@ public class FriendListAdapter extends ArrayAdapter<User> {
 	            System.out.println(String.format("past location radio button clicked, row %d", position));
 	            boolean checked = ((RadioButton) view).isChecked();
                 if (checked) {
-                    MyMapLocationManager.showUserPastLocation(user);
+                	mapLocationManager.showUserPastLocation(user);
                 } else {
-                	MyMapLocationManager.hideUserPastLocation(user);
+                	mapLocationManager.hideUserPastLocation(user);
                 }
 	        }
 	    };

@@ -9,10 +9,6 @@
 	<string name="create_new_account">Sign Up</string>
 	<string name="log_in">Log In</string>
 	<string name="create_button">Create</string>
-	<string name="first_name">first name</string>
-	<string name="last_name">last name</string>
-	<string name="title_activity_my_location">MyLocation</string>
-	<string name="title_activity_my_path">MyPath</string>
 	<string name="android_api_key">0W4EwH5Ey6PU6tiCpR3QDXuoN9cTeFdv6rdm6Ow</string>
 	<string name="title_activity_log_in">LogInActivity</string>
 	<string name="no_account_alert">Can not find the user! Please input your name and try again</string>
@@ -25,4 +21,22 @@
 	<string name="current_location">"current location"</string>
 	<string name="past_location">past locations</string>
 	<string name="name">friend name</string>
+	<string name="title_activity_my_location">MyLocation</string>
+	<string name="title_activity_my_path">MyPath</string>
+	<string name="first_name">First Name</string>
+	<string name="last_name">Last Name</string>
+	<string name="title_activity_friend_list">FriendListActivity</string>
+	<string name="edit">EDIT</string>
+	<string name="title_activity_friend_manager">FriendManagerActivity</string>
+	<string name="lblBtnAdd">Add Item</string>
+	<string name="txtEmpty">List is empty</string>
+	<string name="lblBtnDel">Delete Selected Items</string>
+	<string name="remove_friends">Remove Friends</string>
+	<string name="add_friends">Add Friends</string>
+	<string name="add_more_friends">Add more friends</string>
+	<string name="title_activity_add_more_friends">AddMoreFriendsActivity</string>
+	<string name="friend_manager">manage friends</string>
+	<string name="title_activity_query_location">QueryLocationActivity</string>
+	<string name="find_my_friend">FindMyFriend</string>
+
 </resources>
