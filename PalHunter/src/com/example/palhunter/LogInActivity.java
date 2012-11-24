@@ -20,12 +20,14 @@ import android.widget.EditText;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 public class LogInActivity extends FragmentActivity {
+
 	EditText firstNameText, lastNameText;
 	Date myDate;
 	Timestamp myTimestamp;
 	String userName = "team17";
 	String password = "palhunter1";
-	User myUser;
+	String firstName, lastName;
+	int userId;
 	LogInHandler handler;
 	HttpClient httpClient = AndroidHttpClient.newInstance("Android-palhunter");
     String httpQueryURL = "id=%d&action=queryPeopleId";
@@ -34,7 +36,7 @@ public class LogInActivity extends FragmentActivity {
     public void LogIn(View view) {
 
     	try {
-			String firstName, lastName;
+
 			
 	    	firstNameText = (EditText)findViewById(R.id.first_name_login);
 	    	firstName = firstNameText.getText().toString().trim();
@@ -42,8 +44,6 @@ public class LogInActivity extends FragmentActivity {
 	    	lastNameText = (EditText)findViewById(R.id.last_name_login);
 	    	lastName = lastNameText.getText().toString().trim();
 	    
-	    	myUser.firstName = firstName;
-	    	myUser.lastName = lastName;
 			final String url = String.format(httpQueryUserByIdURL, firstName, lastName);
 			
 			DatabaseClient.get(url, null, handler);
@@ -64,7 +64,6 @@ public class LogInActivity extends FragmentActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_log_in);
-        myUser = new User();
         handler = new LogInHandler();
     
     }
@@ -88,25 +87,23 @@ public class LogInActivity extends FragmentActivity {
 				try {			
 					
 					JSONObject userObject = userArray.getJSONObject(0);
-					myUser.userId = userObject.getInt("PID");
-					System.out.println("login got userId = " + myUser.userId);								
+					userId = userObject.getInt("PID");
+					System.out.println("login got userId = " + userId);								
 				} catch (JSONException e) {
 					System.out.println("login handler on success failed to get user id");
 				}
-				
-			    SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
-			    SharedPreferences.Editor editor = settings.edit();
-			    editor.putBoolean("login", true);
-				editor.putInt("id", myUser.userId);			  
-			    editor.putString("firstName", myUser.firstName);
-				editor.putString("lastName", myUser.lastName);
-			    editor.commit();
-
+				SharedPreferences settings = getSharedPreferences(MainActivity.myPrefence,0);
+				SharedPreferences.Editor e = settings.edit();
+				e.putBoolean("logged", true);
+				e.putInt("id", userId);
+				e.putString("firstName", firstName);
+				e.putString("lastName", lastName);
+				e.commit();
 				
 				Intent intent = new Intent(LogInActivity.this, MyLocation.class);
-				intent.putExtra("id", myUser.userId);
-				intent.putExtra("firstName", myUser.firstName);
-				intent.putExtra("lastName", myUser.lastName);
+				intent.putExtra("id", userId);
+				intent.putExtra("firstName", firstName);
+				intent.putExtra("lastName", lastName);
 				startActivity(intent);	
 			}
 			else {

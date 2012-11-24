@@ -3,15 +3,14 @@ package com.example.palhunter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.View;
@@ -21,12 +20,16 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
 public class AddMoreFriendsActivity extends Activity {
 
     User myUser;
     ArrayList<String> list = new ArrayList<String>();
-    Map name_id_hash = new HashMap();
+    HashMap<String, Integer> name_id_hash = new HashMap<String, Integer>();
     ArrayAdapter<String> adapter;
+    ArrayList<User> candidates;
+    
     ListView lview;
     String httpAddFriendList = "action=addFriend&pid1=%s&pid2=%s";
     String httpNonFriendList = "id=%d&action=findAllFriends";
@@ -34,8 +37,12 @@ public class AddMoreFriendsActivity extends Activity {
     
     public void ViewFriends(View view)
     {
-    	final String getFriendList = String.format(httpNonFriendList, myUser.userId);
-    	DatabaseClient.get(getFriendList, null, handlerMoreFriend);
+    	Intent intent = getIntent();
+		setResult(RESULT_OK, intent);	
+		finish();
+		
+  //  	final String getFriendList = String.format(httpNonFriendList, myUser.userId);
+ //  	DatabaseClient.get(getFriendList, null, handlerMoreFriend);
     }
 	
     @Override
@@ -47,30 +54,44 @@ public class AddMoreFriendsActivity extends Activity {
     	myUser = new User();
     	Intent intent = getIntent();
     	Bundle b = intent.getExtras();
+    	if(b!=null)
+    		myUser = b.getParcelable(User.USER_TYPE);
+    	
+    	String nonFriendsArrayString = b.getString("nonfriends");
+   /* 	
     	myUser.userId = b.getInt("id");
     	myUser.firstName = b.getString("firstName");
     	myUser.lastName = b.getString("lastName");
     	String friendsArrayString = b.getString("nonfriends");
-	    
-    	JSONArray friendsArray = null;
+	*/    
+    	JSONArray nonFriendsArray = null;
+    	candidates = new ArrayList<User>();
     	try {
-			friendsArray = new JSONArray(friendsArrayString);
-			for(int i=0; i<friendsArray.length(); i++) {
-				JSONObject friend = friendsArray.getJSONObject(i);
-				String f_id = friend.getString("PID");
-				String f_first_name = friend.getString("FIRST_NAME");
-				String f_last_name = friend.getString("LAST_NAME");
-				list.add(f_first_name+" "+f_last_name);
-				name_id_hash.put(f_first_name+" "+f_last_name, f_id);
+			nonFriendsArray = new JSONArray(nonFriendsArrayString);
+			for(int i=0; i<nonFriendsArray.length(); i++) {
+				JSONObject friend = nonFriendsArray.getJSONObject(i);
+				User friendCandidate = new User();
+				friendCandidate.userId = Integer.parseInt(friend.getString("PID"));
+				friendCandidate.firstName = friend.getString("FIRST_NAME");
+				friendCandidate.lastName = friend.getString("LAST_NAME");
+				list.add(friendCandidate.getFullName());
+				name_id_hash.put(friendCandidate.getFullName(), friendCandidate.userId);
+				candidates.add(friendCandidate);
 			}
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
+  /*
+    	for(int i=0; i<myUser.friendList.size(); i++) {
+    		User myFriend = myUser.friendList.get(i);
+    		list.add(myFriend.getFullName());
+    		name_id_hash.put(myFriend.getFullName(), myFriend.userId.toString());
+    	}
+	*/   
 	    TextView tview = (TextView)findViewById(R.id.people_list);
-	    tview.setText(myUser.firstName+ " "+myUser.lastName + " 's nonFriends");
+	    tview.setText(myUser.getFullName() + " 's nonFriends");
 	    lview = (ListView)findViewById(R.id.list_people);
 	    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, list);
 	    lview.setAdapter(adapter);
@@ -78,30 +99,32 @@ public class AddMoreFriendsActivity extends Activity {
 	    
 	    
 	    /** Defining a click event listener for the button "Delete" */
-	    OnClickListener listenerDel = new OnClickListener() {
+	    OnClickListener listenerAdd = new OnClickListener() {
 	    	public void onClick(View v) {
 	    		/** Getting the checked items from the listview */
 	    		SparseBooleanArray checkedItemPositions = lview.getCheckedItemPositions();
 	    		int itemCount = lview.getCount();
-	    		String removed_friends = "";
+	    		
+	    		String add_candidates = "";
 	    		for(int i=itemCount-1; i >= 0; i--){
 	    			if(checkedItemPositions.get(i)){
-	    				removed_friends = removed_friends + name_id_hash.get(list.get(i)) + ",";
+	    				add_candidates = add_candidates + name_id_hash.get(list.get(i)) + ",";
+	    				myUser.addFriend(candidates.get(i));
 	    				adapter.remove(list.get(i));
 	    				lview.setItemChecked(i, false);
 	    			}
 	    		}
 	    		
-	    		if(removed_friends.length()>0){
-	    			removed_friends = removed_friends.substring(0,removed_friends.length()-1);
-	    			String getFriendList = String.format(httpAddFriendList, myUser.userId,removed_friends);
-	    			DatabaseClient.get(getFriendList, null, new JsonHttpResponseHandler());
+	    		if(add_candidates.length()>0){
+	    			add_candidates = add_candidates.substring(0, add_candidates.length()-1);
+	    			String getFriendList = String.format(httpAddFriendList, myUser.userId, add_candidates);
+	    			DatabaseClient.get(getFriendList, null, null);
 	    		}
 	        	adapter.notifyDataSetChanged();	    	    
 	    	}
 	    };
 	    Button btnDel = (Button) findViewById(R.id.add_friends);
-	    btnDel.setOnClickListener(listenerDel); 
+	    btnDel.setOnClickListener(listenerAdd); 
     }
 
     @Override
@@ -120,8 +143,8 @@ public class AddMoreFriendsActivity extends Activity {
 	    public void onFailure(Throwable e, JSONArray errorResponse) {
 	    	System.out.println("get friend list on failure jsonarray");
 	    	try {
-	    	for(int i=0; i<errorResponse.length(); i++) {
-	    		System.out.print(errorResponse.getJSONObject(i).keys().toString());
+		    	for(int i=0; i<errorResponse.length(); i++) {
+		    		System.out.print(errorResponse.getJSONObject(i).keys().toString());
 	    	}
 	    	}catch (JSONException ee) {
 				System.out.println("jsonarray failed to get friend list");
@@ -135,14 +158,15 @@ public class AddMoreFriendsActivity extends Activity {
 		public void onSuccess(JSONArray friendsArray) {
 			System.out.println("get my friend list handler on Success, there are "+ 
 			friendsArray.length() + " friends");
-			System.out.println(friendsArray.toString());
-			Intent intent = new Intent(AddMoreFriendsActivity.this, FriendManagerActivity.class);
-			intent.putExtra("id", myUser.userId);
-			intent.putExtra("firstName", myUser.firstName);
-			intent.putExtra("lastName", myUser.lastName);
-			intent.putExtra("friends", friendsArray.toString());
-			startActivity(intent);			
-
+/*		
+			Bundle b = new Bundle();
+			b.putParcelable(User.USER_TYPE, myUser);
+			intent.putExtras(b);
+*/			
+	//		setResult(RESULT_OK, getIntent());
+	//		startActivity(intentFromFriendManager);		
+			
+			finish();
 		}
 	}
 }

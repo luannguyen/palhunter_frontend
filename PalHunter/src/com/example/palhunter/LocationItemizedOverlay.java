@@ -1,6 +1,7 @@
 package com.example.palhunter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -19,10 +20,16 @@ public class LocationItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 		myContext = context;
 	}
 
+	public List<OverlayItem> getOverlays()
+	{
+		return myOverlays;
+	}
+	
 	public void addOverlay(OverlayItem overlay) {
 	    myOverlays.add(overlay);
 	    populate();
 	}
+	
 	@Override
 	protected OverlayItem createItem(int i) {
 		// TODO Auto-generated method stub

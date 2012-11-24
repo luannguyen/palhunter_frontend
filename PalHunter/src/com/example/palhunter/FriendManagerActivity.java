@@ -3,15 +3,14 @@ package com.example.palhunter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.SparseBooleanArray;
 import android.view.Menu;
 import android.view.View;
@@ -21,16 +20,19 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
+
 public class FriendManagerActivity extends Activity {
 
     User myUser;
-    ArrayList<String> list = new ArrayList<String>();
-    Map name_id_hash = new HashMap();
+    ArrayList<String> list;
+    HashMap<String, String> name_id_hash;
     ArrayAdapter<String> adapter;
     ListView lview;
     String httpRemoveFriendList = "action=removeFriend&pid1=%s&pid2=%s";
     String httpNonFriendList = "action=findAllNonFriends&id=%d";
     AddMoreFriendsHandler handlerMoreFriend;
+    Intent intentFromMyLocation;
     
     public void AddMoreFriends(View view)
     {
@@ -44,38 +46,25 @@ public class FriendManagerActivity extends Activity {
         
 	    setContentView(R.layout.activity_friend_manager);
 	    handlerMoreFriend = new AddMoreFriendsHandler();
-    	myUser = new User();
-    	Intent intent = getIntent();
-    	Bundle b = intent.getExtras();
-    	myUser.userId = b.getInt("id");
-    	myUser.firstName = b.getString("firstName");
-    	myUser.lastName = b.getString("lastName");
-    	String friendsArrayString = b.getString("friends");
-	    
-    	JSONArray friendsArray = null;
-    	try {
-			friendsArray = new JSONArray(friendsArrayString);
-			for(int i=0; i<friendsArray.length(); i++) {
-				JSONObject friend = friendsArray.getJSONObject(i);
-				String f_id = friend.getString("PID");
-				String f_first_name = friend.getString("FIRST_NAME");
-				String f_last_name = friend.getString("LAST_NAME");
-				list.add(f_first_name+" "+f_last_name);
-				name_id_hash.put(f_first_name+" "+f_last_name, f_id);
-			}
-			
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	    intentFromMyLocation = getIntent();
+    	Bundle b = intentFromMyLocation.getExtras();
+    	list = new ArrayList<String>();
+    	name_id_hash = new HashMap<String, String>();
+    	if(b!=null)
+    	    myUser = (User)(b.getParcelable(User.USER_TYPE));
     	
+    	for(int i=0; i<myUser.friendList.size(); i++) {
+    		User friend = myUser.friendList.get(i);
+			list.add(friend.getFullName());
+			name_id_hash.put(friend.getFullName(), friend.userId.toString());
+    	}
+    	
+    	System.out.println("here");
 	    TextView tview = (TextView)findViewById(R.id.myname);
 	    tview.setText(myUser.firstName+ " "+myUser.lastName + " 's Friends");
 	    lview = (ListView)findViewById(R.id.list);
 	    adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_multiple_choice, list);
 	    lview.setAdapter(adapter);
-	    
-	    
 	    
 	    /** Defining a click event listener for the button "Delete" */
 	    OnClickListener listenerDel = new OnClickListener() {
@@ -95,7 +84,8 @@ public class FriendManagerActivity extends Activity {
 	    		if(removed_friends.length()>0){
 	    			removed_friends = removed_friends.substring(0,removed_friends.length()-1);
 	    			String getFriendList = String.format(httpRemoveFriendList, myUser.userId,removed_friends);
-	    			DatabaseClient.get(getFriendList, null, new JsonHttpResponseHandler());
+	    			DatabaseClient.get(getFriendList, null, null);
+	    			myUser.removeFriend(Integer.parseInt(removed_friends));
 	    		}
 	    		
 	        	adapter.notifyDataSetChanged();	
@@ -110,6 +100,11 @@ public class FriendManagerActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_friend_list, menu);
         return true;
+    }
+    
+    public void BackToMyMap(View v) {		
+		setResult(RESULT_OK, intentFromMyLocation);
+		finish();
     }
     
     private final class AddMoreFriendsHandler extends JsonHttpResponseHandler {
@@ -135,13 +130,31 @@ public class FriendManagerActivity extends Activity {
 	    }
 	    
 		public void onSuccess(JSONArray friendsArray) {
-			Intent intent = new Intent(FriendManagerActivity.this, AddMoreFriendsActivity.class);
+			Intent intent = new Intent(FriendManagerActivity.this, AddMoreFriendsActivity.class);	
+/*			
 			intent.putExtra("id", myUser.userId);
 			intent.putExtra("firstName", myUser.firstName);
 			intent.putExtra("lastName", myUser.lastName);
 			intent.putExtra("nonfriends", friendsArray.toString());
-			startActivity(intent);			
+*/			
 
+			Bundle b = new Bundle();
+			b.putParcelable(User.USER_TYPE, myUser);
+			b.putString("nonfriends", friendsArray.toString());
+			intent.putExtras(b);
+			
+			startActivityForResult(intent,0);			
+		}
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (resultCode) { 
+		case RESULT_OK:
+			Bundle b = data.getExtras();  
+			myUser = b.getParcelable(User.USER_TYPE);
+            break;
+		default:
+	        break;
 		}
 	}
 }

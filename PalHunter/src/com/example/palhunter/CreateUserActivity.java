@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 
 
 public class CreateUserActivity extends Activity {
@@ -61,17 +62,16 @@ public class CreateUserActivity extends Activity {
 		    	final String url = String.format(httpInserUserURL, userId, firstName, lastName, pubDate);
 		    	DatabaseClient.get(url, null, null);
 		    	
+				SharedPreferences settings = getSharedPreferences(MainActivity.myPrefence,0);
+				SharedPreferences.Editor e = settings.edit();
+				e.putBoolean("logged", true);
+				e.putInt("id", userId);
+				e.putString("firstName", firstName);
+				e.putString("lastName", lastName);
+				e.commit();
+		    	
 				Intent intent = new Intent(CreateUserActivity.this, MyLocation.class);
 				System.out.println("id " + userId + " firstName " + firstName + " lastName " + lastName);
-			
-			    SharedPreferences settings = getSharedPreferences(MainActivity.PREFS_NAME, 0);
-			    SharedPreferences.Editor editor = settings.edit();
-			    editor.putBoolean("login", true);
-				editor.putInt("id", userId);			  
-			    editor.putString("firstName", firstName);
-				editor.putString("lastName", lastName);
-			    editor.commit();
-
 				intent.putExtra("id", userId);
 				intent.putExtra("firstName", firstName);
 				intent.putExtra("lastName", lastName);
