@@ -41,6 +41,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
     String httpPostURL = "action=insertLocation&id=%d&lat_int=%d&long_int=%d&updated_time=%d";
     String httpGetMyLocations = "id=%d&action=queryPastLocations";
     String httpGetMyFriends = "id=%d&action=findAllFriends";
+    FriendListAdapter friendListAdapter;
     User myUser;
     
     
@@ -91,6 +92,12 @@ public class MyLocation extends MapActivity implements OnClickListener {
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10,ll); 
         
         loadMyFriendList(ON_CREATE);
+        
+    	textView.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				mapLocationManager.zoomInToUser(myUser);
+			}
+		});
 
     }
     
@@ -104,6 +111,11 @@ public class MyLocation extends MapActivity implements OnClickListener {
     public void onResume()
     {
     	super.onResume();
+    	//test whether android keep variables 
+    	if(myUser != null) {
+    		System.out.println("on resume my user " + myUser.firstName + " still in memory");
+    		
+    	}
         loadMyPastLocations(ON_RESUME);        
         loadMyFriendList(ON_RESUME);
     }
@@ -115,7 +127,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
         menu.add(R.string.friend_list);
         menu.add(R.string.my_past_location);
         
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     
@@ -124,6 +136,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
 
     	switch (item.getItemId()) {
             case R.string.log_out:
+            	System.out.println("log out clicked");
             	SharedPreferences settings = getSharedPreferences(MainActivity.myPrefence, 0);
             	SharedPreferences.Editor e = settings.edit();
             	e.putBoolean("logged", false);
@@ -131,14 +144,14 @@ public class MyLocation extends MapActivity implements OnClickListener {
             	Intent intent = new Intent(this, MainActivity.class);
             	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             	startActivity(intent);
-            	return true;
+            	break;
             	
             case R.string.my_past_location:
             	//switch to my past location activity
-            	return true;
+            	break;
             case R.string.friend_list:
             	//switch to add/delete friend activity
-            	return true;
+            	break;
         }
         return super.onOptionsItemSelected(item);
 
@@ -213,7 +226,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
 					userList.put(friend.userId, friend);
 				}
 			} catch (Exception e) {
-				System.out.println("jsonarray failed to get location points");
+				System.out.println("jsonarray failed to get friend list");
 			}
 			
 			final ListView friendList = (ListView)findViewById(R.id.listView1);
@@ -221,46 +234,13 @@ public class MyLocation extends MapActivity implements OnClickListener {
 			// Second parameter - Layout for the row
 			// Third parameter - ID of the TextView to which the data is written
 			// Forth - the Array of data
-			User[] myfriendsContents = new User[myUser.friendList.size()];
-			myUser.friendList.toArray(myfriendsContents);
-			FriendListAdapter adapter = new FriendListAdapter(MyLocation.this,
-					android.R.layout.simple_list_item_1, myfriendsContents);
-			adapter.mapLocationManager = mapLocationManager;
+			//User[] myfriendsContents = new User[myUser.friendList.size()];
+			//myUser.friendList.toArray(myfriendsContents);
+			friendListAdapter = new FriendListAdapter(MyLocation.this,
+					android.R.layout.simple_list_item_1, myUser.friendList);
+			friendListAdapter.mapLocationManager = mapLocationManager;
 			// Assign adapter to ListView
-			friendList.setAdapter(adapter); 
-			
-			
-/*			
-			friendList.setOnItemClickListener(new OnItemClickListener() {
-		        public void onItemClick(AdapterView<?> parent, View view,
-		                int position, long id) {
-		        
-		        User myFriend = myUser.friendList.get(position);
-		        System.out.println("selected friend id: "+ position);
-		        System.out.println("view id: "+ view.getId());
-		        switch(view.getId()){
-		        case R.id.friendNameView:
-		        	break;
-		        case R.id.currentLocationRadioBtn:
-		        	boolean checked = ((RadioButton) view).isChecked();
-	                if (checked) {
-	                    MyMapLocationManager.showUserCurrentLocation(myUser);
-	                } else {
-	                	MyMapLocationManager.hideUserCurrentLocation(myUser);
-	                }
-	                break;
-		        case R.id.pastLocationRadioBtn:
-		        	checked = ((RadioButton) view).isChecked();
-	                if (checked) {
-	                    MyMapLocationManager.showUserPastLocation(myFriend);
-	                } else {
-	                	MyMapLocationManager.hideUserPastLocation(myFriend);
-	                }
-	                break;
-		        } 
-		        }
-		    });
-	*/	
+			friendList.setAdapter(friendListAdapter); 
 		}
 	
     }
@@ -321,6 +301,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
 				}
 				user.locationInMemory = true;
 				mapOverlays.add(user.getLocationItemizedOverlay());
+			//	mapOverlays.remove(user.getLocationItemizedOverlay());
 			}
 		}
 	public void onClick(View v) {
@@ -339,6 +320,43 @@ public class MyLocation extends MapActivity implements OnClickListener {
 		b.putParcelable(User.USER_TYPE, myUser);
 		i.putExtras(b);
 		i.setClass(this, FriendManagerActivity.class);
-		startActivity(i);
+	//	startActivity(i);
+		startActivityForResult(i, 0);
+	}
+	
+	public void QueryLocations(View v) {
+		Intent i = new Intent();
+		Bundle b = new Bundle();
+		b.putParcelable(User.USER_TYPE, myUser);
+		i.putExtras(b);
+		i.setClass(this, MapQueryActivity.class);
+		startActivityForResult(i, 0);
+	}
+	
+	protected void onActivityResult(int requestCode, int resultCode, Intent dataIntent) {
+		switch (resultCode) { 
+		case RESULT_OK:
+			if(dataIntent.hasExtra(User.USER_TYPE)) {
+				myUser = (User)dataIntent.getExtras().get(User.USER_TYPE);
+			}
+			friendListAdapter.clear();
+			for(int i=0; i<myUser.friendList.size(); i++) {
+				friendListAdapter.add(myUser.friendList.get(i));
+			}
+            break;
+		default:
+	        break;
+		}
+	}
+	
+	public void LogOut(View view) {
+    	System.out.println("log out clicked");
+    	SharedPreferences settings = getSharedPreferences(MainActivity.myPrefence, 0);
+    	SharedPreferences.Editor e = settings.edit();
+    	e.putBoolean("logged", false);
+    	e.commit();
+    	Intent intent = new Intent(this, MainActivity.class);
+    	intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    	startActivity(intent);	
 	}
 }

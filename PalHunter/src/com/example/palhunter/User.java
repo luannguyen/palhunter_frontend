@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -25,6 +26,7 @@ public class User implements Parcelable{
 	ArrayList<User> friendList;
 	ArrayList<UserLocation> myPastLocations;
 	LocationItemizedOverlay myLocationOveraly;
+	LocationItemizedOverlay myCurrentLocationOverlay;
 	Context myContext;
 	Drawable myDrawable;
 	boolean locationInMemory;
@@ -38,6 +40,7 @@ public class User implements Parcelable{
 		myPastLocations = new ArrayList<UserLocation>();
 		friendList = new ArrayList<User>();		
 		myLocationOveraly = new LocationItemizedOverlay(drawable, context);
+		myCurrentLocationOverlay = new LocationItemizedOverlay(drawable, context);
 		myContext = context;
 		myDrawable = drawable;
 		locationInMemory = false;
@@ -67,6 +70,10 @@ public class User implements Parcelable{
 		return firstName + " " + lastName;
 	}
 	
+	public String getFullName()
+	{
+		return firstName + " " + lastName;
+	}
 	public boolean addFriend(User user1)
 	{
 		if(friendList.contains(user1)) {
@@ -111,21 +118,38 @@ public class User implements Parcelable{
 		GeoPoint myPoint = new GeoPoint(latitudeValue, longitudeValue);
 		OverlayItem overlayitem = new OverlayItem(myPoint, firstName, lastName); 
 		myLocationOveraly.addOverlay(overlayitem);
+		myCurrentLocationOverlay.clear();
+		myCurrentLocationOverlay.addOverlay(overlayitem);
 	}
+	
+	public void addAllLocations(Drawable drawable, Context context)
+	{
+		myDrawable = drawable;
+		myContext = context;
+		
+		myLocationOveraly = new LocationItemizedOverlay(drawable, context);
+		myCurrentLocationOverlay = new LocationItemizedOverlay(drawable, context);
+		OverlayItem overlayitem = null;
+		for(int i=0; i<myPastLocations.size(); i++) {
+			UserLocation tempL = myPastLocations.get(i);
+			overlayitem = new OverlayItem(tempL.getLocationPoint(), firstName, lastName);
+			myLocationOveraly.addOverlay(overlayitem);
+		}
+		if(overlayitem != null)
+			myCurrentLocationOverlay.addOverlay(overlayitem);
+		
+		for(int i=0; i<friendList.size(); i++) {
+			friendList.get(i).addAllLocations(drawable, context);
+		}
+	}
+	
 	
 	public LocationItemizedOverlay getLocationItemizedOverlay() {
 		return myLocationOveraly;
 	}
 	
 	public LocationItemizedOverlay getCurrentLocation() {
-		System.out.println("get current location");
-		LocationItemizedOverlay curLocationOverlay = new LocationItemizedOverlay(myDrawable, myContext);
-		if(myPastLocations.size() > 0) {
-			System.out.println("my last location");
-			GeoPoint myLastLocation = myPastLocations.get(myPastLocations.size()-1).getLocationPoint();		
-			curLocationOverlay.addOverlay(new OverlayItem(myLastLocation, firstName, lastName));
-		}
-		return curLocationOverlay;
+		return myCurrentLocationOverlay;
 	}
 	
 	public void getLocations(InputStream responseStream) throws Exception {
@@ -170,7 +194,41 @@ public class User implements Parcelable{
     public int describeContents() {
         return 0;
     }
-
+    
+    public GeoPoint getCurrentLocationPoint() {
+    	if( myPastLocations.size() > 0 )
+    		return (myPastLocations.get(myPastLocations.size()-1).locationPoint);
+    	
+    	System.out.println("current location == null");
+    	return new GeoPoint(0,0);
+    }
+    
+    private double distance(User user) {
+    	double x = this.getCurrentLocationPoint().getLatitudeE6() / 1e6;
+    	double y = this.getCurrentLocationPoint().getLongitudeE6() / 1e6;
+    	
+    	double u_x = user.getCurrentLocationPoint().getLatitudeE6()/ 1e6;
+    	double u_y = user.getCurrentLocationPoint().getLongitudeE6()/ 1e6;
+    	
+    	System.out.println("user: " + user.getFullName() + " x:y = " + u_x + " : " + u_y);
+    	
+    	float results[] = new float[3]; 
+    	Location.distanceBetween(x, y, u_x, u_y, results);
+    	
+    	System.out.println("distance: " + user.getFullName() + " "+ results[0]);
+    	return results[0];
+    }
+    
+    public ArrayList<User> findFriendsWithinDistance(double distanceValue) {
+    	ArrayList<User> closeFriend = new ArrayList<User>();
+    	for(int i=0; i<friendList.size(); i++) {
+    		if(distance(friendList.get(i)) < distanceValue * 1000) {
+    			closeFriend.add(friendList.get(i));
+    		}
+    	}
+    	return closeFriend;
+    }
+    
     /*
      * @see android.os.Parcelable#writeToParcel(android.os.Parcel, int)
      * 	Integer userId;
@@ -186,24 +244,25 @@ public class User implements Parcelable{
 	MyLocation.MyLocationHandler locationHandler;
      */
     public void writeToParcel(Parcel out, int flags) {
-    	out.writeStringArray(new String[] {firstName, lastName});
+    	out.writeInt(userId);
+    	out.writeString(firstName);
+    	out.writeString(lastName);
     	out.writeLong(createdTime);
-    	out.writeList(friendList);
-    	out.writeList(myPastLocations);
+    	out.writeTypedList(friendList);
+    	out.writeTypedList(myPastLocations);
     }
     
-    public User(Parcel in) {
-    	String [] data = new String[2];
-    	in.readStringArray(data);
-    	firstName = data[0];
-    	lastName = data[1];
+    private User(Parcel in) {
+    	this();
+    	userId = in.readInt();
+    	firstName = in.readString();
+    	lastName = in.readString();
     	createdTime = in.readLong();
     	
     	friendList = new ArrayList<User>();
-    	in.readList(friendList,null);
-    	
+    	in.readTypedList(friendList,User.CREATOR);
     	myPastLocations = new ArrayList<UserLocation>();
-    	in.readList(myPastLocations, null);
+    	in.readTypedList(myPastLocations, UserLocation.CREATOR);
     }
 
     public static final Parcelable.Creator<User> CREATOR

@@ -1,7 +1,9 @@
 package com.example.palhunter;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
 
@@ -16,29 +18,42 @@ public class MyMapLocationManager {
 	}
 	public void showUserCurrentLocation(User user) {
 		mapOverlays.add(user.getCurrentLocation());
-		mapview.postInvalidate();
+		mapview.invalidate();
 		//show last location as currentlocation;
 		
 	}
 	
+	public void showUserCurrentLocaiton(ArrayList<User> users) {
+		for(int i=0; i<users.size(); i++) {
+			showUserCurrentLocation(users.get(i));
+		}
+	}
+	
 	public void hideUserCurrentLocation(User user) {
-		
+		mapOverlays.remove(user.getCurrentLocation());
+		mapview.invalidate();
 	}
 
 	public void showUserPastLocation(User user) {
-		if(mapOverlays == null) {
-			System.out.println("mapoverlay == null");
-		} 
-		if(user.getLocationItemizedOverlay() == null) {
-			System.out.println("user.getLocationItemizedOverlay() == null");
-		}
 		mapOverlays.add(user.getLocationItemizedOverlay());
-	//	mapview.postInvalidate();
+		mapview.invalidate();
 	}
 	
 	public void hideUserPastLocation(User user) {
 		mapOverlays.remove(user.getLocationItemizedOverlay());
-	//	mapview.postInvalidate();
+		mapview.invalidate();
+	}
+	
+	public void zoomInToUser(User user) {
+		MapController controller = mapview.getController();
+        controller.setZoom(17);
+        controller.animateTo(user.getCurrentLocation().getCenter());
+	}
+	
+	public void clear(User user) {
+		mapOverlays.clear(); 
+		mapOverlays.add(user.getCurrentLocation());
+		mapview.invalidate();
 	}
 
 }

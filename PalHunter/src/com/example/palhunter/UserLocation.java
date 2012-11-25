@@ -36,7 +36,8 @@ public class UserLocation implements Parcelable{
 		dest.writeLong(timeStamp);
 	}
 	
-	public UserLocation(Parcel in) {
+	private UserLocation(Parcel in) {
+		this();
 		int latitute = in.readInt();
 		int longtitude = in.readInt();
 		timeStamp = in.readLong();

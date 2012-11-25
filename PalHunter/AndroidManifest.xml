@@ -88,8 +88,13 @@
 			</intent-filter>
 		</activity>
 		<activity
-			android:name="com.example.palhunter.QueryLocationActivity"
-			android:label="@string/title_activity_query_location">
+			android:name="com.example.palhunter.MapQueryActivity"
+			android:label="@string/title_activity_map_query">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN"/>
+
+				<category android:name="android.intent.category.LAUNCHER"/>
+			</intent-filter>
 		</activity>
 	</application>
 

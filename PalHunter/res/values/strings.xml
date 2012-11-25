@@ -37,6 +37,12 @@
 	<string name="title_activity_add_more_friends">AddMoreFriendsActivity</string>
 	<string name="friend_manager">manage friends</string>
 	<string name="title_activity_query_location">QueryLocationActivity</string>
-	<string name="find_my_friend">FindMyFriend</string>
-
+	<string name="find_my_friend">query</string>
+	<string name="back_to_map">My Map</string>
+	<string name="location_manager">my friend locations</string>
+	<string name="query_my_friends_within_distance">my friends within </string>
+	<string name="miles">miles</string>
+	<string name="kms">kms</string>
+	<string name="search">search</string>
+	
 </resources>
