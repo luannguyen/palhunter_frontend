@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:background="@android:color/background_light"
+	android:orientation="horizontal">
+
+ <LinearLayout
+ 	android:layout_width="214dp"
+ 	android:layout_height="wrap_content"
+ 	android:layout_margin="1dp"
+ 	android:background="@android:color/darker_gray"
+ 	android:orientation="vertical">
+
+     <LinearLayout 
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:orientation="vertical" 
+      android:layout_margin="20dp">
+      
+      <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/query_my_friends_within_distance" />
+
+      <EditText
+      	android:id="@+id/distanceValue"
+      	android:layout_width="match_parent"
+      	android:layout_height="wrap_content"
+      	android:inputType="number"
+      	android:maxEms="3"
+      	android:textStyle="normal">
+
+      	<requestFocus/>
+      </EditText>
+
+		<RadioGroup
+			android:id="@+id/measureGroup"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:orientation="horizontal">
+
+          <RadioButton
+          	android:id="@+id/milesRadio"
+          	android:layout_width="wrap_content"
+          	android:layout_height="wrap_content"
+          	android:text="@string/miles"/>
+
+          <RadioButton
+          	android:id="@+id/kmsRadio"
+          	android:layout_width="wrap_content"
+          	android:layout_height="wrap_content"
+          	android:text="@string/kms"/>
+		</RadioGroup>
+
+
+      <Button
+      	android:id="@+id/confirmBtn"
+      	android:layout_width="fill_parent"
+      	android:layout_height="wrap_content"
+      	android:text="@string/search"/>
+
+      </LinearLayout>
+ </LinearLayout>
+</LinearLayout>

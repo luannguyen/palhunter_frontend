@@ -1,0 +1,71 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<LinearLayout
+		android:id="@+id/userMenuBar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true">
+
+		<TextView
+			android:id="@+id/nameField2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<Button
+			android:id="@+id/queryUser"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="queryFriendsWithinDistance"
+			android:text="@string/find_my_friend"/>
+
+		<Button
+			android:id="@+id/button1"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:onClick="BackToMyMap"
+			android:text="@string/back_to_map"/>
+	</LinearLayout>
+
+	<LinearLayout
+		android:id="@+id/locationQuery"
+		style="@style/AppTheme"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/userMenuBar">
+
+	<Button
+		android:id="@+id/button2"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:background="@drawable/ic_action_location_2"
+		android:onClick="QueryAddress"
+		android:typeface="normal"/>
+
+	<EditText
+		android:id="@+id/address"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:ems="10"
+		android:inputType="textPostalAddress"/>
+	</LinearLayout>
+
+		<requestFocus/>
+
+	<com.google.android.maps.MapView
+		android:id="@+id/mapview2"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentBottom="true"
+		android:layout_alignParentLeft="true"
+		android:layout_below="@id/locationQuery"
+		android:apiKey="0W4EwH5Ey6PU6tiCpR3QDXuoN9cTeFdv6rdm6Ow"
+		android:clickable="true">
+	</com.google.android.maps.MapView>
+
+</RelativeLayout>
