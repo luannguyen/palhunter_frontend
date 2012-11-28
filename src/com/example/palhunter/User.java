@@ -24,7 +24,7 @@ public class User implements Parcelable{
 	long createdTime;
 	ArrayList<User> friendList;
 	ArrayList<UserLocation> myPastLocations;
-//	LocationItemizedOverlay myLocationOveraly;
+	LocationItemizedOverlay myLocationOveraly;
 	PathOverlay myPathOverlay;
 	LocationItemizedOverlay myCurrentLocationOverlay;
 	HashMap<Overlay, Integer> myOverlayIndexMap;
@@ -43,7 +43,9 @@ public class User implements Parcelable{
 		// TODO Auto-generated constructor stub
 		myPastLocations = new ArrayList<UserLocation>();
 		friendList = new ArrayList<User>();		
-//		myLocationOveraly = new LocationItemizedOverlay(drawable, context);
+		Drawable pathLocationDrawable = context.getResources().getDrawable(R.drawable.google_maps_marker);
+		myLocationOveraly = new LocationItemizedOverlay(pathLocationDrawable, context);
+		
 		myCurrentLocationOverlay = new LocationItemizedOverlay(drawable, context);
 		myOverlayIndexMap = new HashMap<Overlay, Integer>();
 		myContext = context;
@@ -146,11 +148,11 @@ public class User implements Parcelable{
 		if(myPathOverlay == null) {
 			myPathOverlay = new PathOverlay(myPastLocations, myMapView, myContext);
 		} 
-/*		
+		
 		if(!myCurrentLocationOverlay.isEmpty()) {
 			myLocationOveraly.addOverlay(myCurrentLocationOverlay.getItem(0));
 		}
-*/		
+		
 		myCurrentLocationOverlay.clear();
 		myCurrentLocationOverlay.addOverlay(overlayitem);
 	}
@@ -160,8 +162,9 @@ public class User implements Parcelable{
 		myDrawable = drawable;
 		myContext = context;
 		myMapView = mapView;
-		
-//		myLocationOveraly = new LocationItemizedOverlay(drawable, context);
+
+		Drawable pathLocationDrawable = context.getResources().getDrawable(R.drawable.google_maps_marker);
+		myLocationOveraly = new LocationItemizedOverlay(pathLocationDrawable, context);
 
 		myCurrentLocationOverlay = new LocationItemizedOverlay(drawable, context);
 		GeoPoint myPoint = null;
@@ -172,6 +175,7 @@ public class User implements Parcelable{
 		
 		for(int i=0; i<myPastLocations.size(); i++) {
 			myPoint = myPastLocations.get(i).getLocationPoint();
+			myCurrentLocationOverlay.addOverlay(new OverlayItem(myPoint,getFullName(),myPastLocations.get(i).getTime()));
 			overlayitem = new OverlayItem(myPoint, getFullName(), myPastLocations.get(i).getTime());
 			if(i==0) {
 				myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext);
@@ -191,6 +195,10 @@ public class User implements Parcelable{
 		return myPathOverlay;
 	}
 	
+	public LocationItemizedOverlay getLocationOverlay() {
+		return myLocationOveraly;
+	}
+	
 	public LocationItemizedOverlay getCurrentLocation() {
 		return myCurrentLocationOverlay;
 	}
@@ -201,6 +209,7 @@ public class User implements Parcelable{
 	
 	public void setPathOverlayIndex(Integer index) {
 		myOverlayIndexMap.put(myPathOverlay, index);
+		myOverlayIndexMap.put(myLocationOveraly, index + 1);
 	}
 	
 	public void removeCurrentLocationOverlayIndex() {
@@ -209,6 +218,7 @@ public class User implements Parcelable{
 	
 	public void removePathOverlayIndex() {
 		myOverlayIndexMap.remove(myPathOverlay);
+		myOverlayIndexMap.remove(myLocationOveraly);
 	}
 	
 	public int getCurrentLocationOverlayIndex() {

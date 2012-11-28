@@ -3,6 +3,9 @@ package com.example.palhunter;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.location.Location;
+
+import com.google.android.maps.GeoPoint;
 import com.google.android.maps.MapController;
 import com.google.android.maps.MapView;
 import com.google.android.maps.Overlay;
@@ -38,6 +41,7 @@ public class MyMapLocationManager {
 	public void showUserPath(User user) {
 		int index = mapOverlays.size();
 		mapOverlays.add(user.getPathOverlay());
+		mapOverlays.add(user.getLocationOverlay());
 		user.setPathOverlayIndex(index);
 		mapview.invalidate();
 	}
@@ -45,6 +49,7 @@ public class MyMapLocationManager {
 	public void hideUserPath(User user) {
 		//need to keep track of the index of overlay in mapoverlay list
 		mapOverlays.remove(user.getPathOverlay());
+		mapOverlays.remove(user.getLocationOverlay());
 		user.removePathOverlayIndex();
 		mapview.invalidate();
 	}
@@ -61,4 +66,17 @@ public class MyMapLocationManager {
 		mapOverlays.add(user.getCurrentLocation());
 		mapview.invalidate();
 	}
+	
+    private double distance(GeoPoint p1, GeoPoint p2) {
+    	double x = p1.getLatitudeE6() / 1e6;
+    	double y = p1.getLongitudeE6() / 1e6;
+    	
+    	double u_x = p2.getLatitudeE6()/ 1e6;
+    	double u_y = p2.getLongitudeE6()/ 1e6;
+    	    	
+    	float results[] = new float[3]; 
+    	Location.distanceBetween(x, y, u_x, u_y, results);
+    	
+    	return results[0];
+    }
 }
