@@ -144,7 +144,7 @@ public class User implements Parcelable{
 		OverlayItem overlayitem = new OverlayItem(myPoint, getFullName(), currentLocation.getTime()); 
 		
 		if(myPathOverlay == null) {
-			myPathOverlay = new PathOverlay(myPastLocations, myMapView);
+			myPathOverlay = new PathOverlay(myPastLocations, myMapView, myContext);
 		} 
 /*		
 		if(!myCurrentLocationOverlay.isEmpty()) {
@@ -167,14 +167,14 @@ public class User implements Parcelable{
 		GeoPoint myPoint = null;
 		OverlayItem overlayitem = null;
 		if(myPastLocations.size() > 0) {
-			myPathOverlay =  new PathOverlay(myPastLocations, myMapView);
+			myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext);
 		}
 		
 		for(int i=0; i<myPastLocations.size(); i++) {
 			myPoint = myPastLocations.get(i).getLocationPoint();
 			overlayitem = new OverlayItem(myPoint, getFullName(), myPastLocations.get(i).getTime());
 			if(i==0) {
-				myPathOverlay =  new PathOverlay(myPastLocations, myMapView);
+				myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext);
 			} 
 		}
 		if(overlayitem != null){
