@@ -45,11 +45,6 @@ public class MapQueryActivity extends MapActivity {
 		setContentView(R.layout.activity_map_query);
 		drawable = this.getResources().getDrawable(R.drawable.androidmarker);
 
-		Intent intent = getIntent();
-		Bundle b = intent.getExtras();
-		myUser = b.getParcelable(User.USER_TYPE);
-		myUser.addAllLocations(drawable, this, mapView);
-
 		mapView = (MapView) findViewById(R.id.mapview2);
 		mapView.setBuiltInZoomControls(true);
 
@@ -57,6 +52,11 @@ public class MapQueryActivity extends MapActivity {
 		mapOverlays = mapView.getOverlays();
 		myLocationManager = new MyMapLocationManager(mapOverlays, mapView);
 
+		Intent intent = getIntent();
+		Bundle b = intent.getExtras();
+		myUser = b.getParcelable(User.USER_TYPE);
+		myUser.addAllLocations(drawable, this, mapView);
+		
 		TextView nameField = (TextView) findViewById(R.id.nameField2);
 		nameField.setText(myUser.firstName + " " + myUser.lastName);
 		nameField.setOnClickListener(new OnClickListener() {
@@ -137,8 +137,7 @@ public class MapQueryActivity extends MapActivity {
 				mapController.animateTo(p);
 				mapController.setZoom(12);
 
-				LocationItemizedOverlay locationOveraly = new LocationItemizedOverlay(
-						drawable, this);
+				LocationItemizedOverlay locationOveraly = new LocationItemizedOverlay(drawable, this);				
 				locationOveraly.addOverlay(new OverlayItem(p, null, null));
 				mapOverlays.clear();
 				mapOverlays.add(locationOveraly);

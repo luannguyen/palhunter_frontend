@@ -1,6 +1,7 @@
 package com.example.palhunter;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -18,7 +19,7 @@ public class PathOverlay extends Overlay {
 	private MapView mapView;
 	Projection projection;
 	
-	public PathOverlay(ArrayList<UserLocation> pastLocations, MapView map_view) {
+	public PathOverlay(ArrayList<UserLocation> pastLocations, MapView map_view, Context context) {
 		myPastLocations = pastLocations;
 		mapView = map_view;
 		projection = mapView.getProjection();
@@ -32,14 +33,15 @@ public class PathOverlay extends Overlay {
 			
 			Paint mPaint = new Paint();
 			mPaint.setDither(true);
-			mPaint.setColor(Color.RED);
+			mPaint.setColor(Color.GREEN);
 			mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 			mPaint.setStrokeJoin(Paint.Join.ROUND);
 			mPaint.setStrokeCap(Paint.Cap.ROUND);
-			mPaint.setStrokeWidth(2);
+			mPaint.setStrokeWidth(4);
 			
 			Point start = new Point();
 			projection.toPixels(myPastLocations.get(0).getLocationPoint(), start);
+			
 			for(int i=1; i<myPastLocations.size(); i++) {
 				GeoPoint point = myPastLocations.get(i).getLocationPoint();
 				
