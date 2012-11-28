@@ -175,8 +175,8 @@ public class User implements Parcelable{
 		
 		for(int i=0; i<myPastLocations.size(); i++) {
 			myPoint = myPastLocations.get(i).getLocationPoint();
-			myCurrentLocationOverlay.addOverlay(new OverlayItem(myPoint,getFullName(),myPastLocations.get(i).getTime()));
 			overlayitem = new OverlayItem(myPoint, getFullName(), myPastLocations.get(i).getTime());
+			myLocationOveraly.addOverlay(overlayitem);
 			if(i==0) {
 				myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext);
 			} 

@@ -25,6 +25,9 @@ public class PathOverlay extends Overlay {
 		projection = mapView.getProjection();
 	}
 
+	public boolean isEmpty() {
+		return myPastLocations.isEmpty();
+	}
 
 	public void draw(Canvas canvas, MapView mapv, boolean shadow) {
 		super.draw(canvas, mapv, shadow);

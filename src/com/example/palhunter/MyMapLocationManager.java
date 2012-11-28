@@ -21,7 +21,8 @@ public class MyMapLocationManager {
 	}
 	public void showUserCurrentLocation(User user) {
 		int index = mapOverlays.size();
-		mapOverlays.add(user.getCurrentLocation());
+		if(!user.getCurrentLocation().isEmpty())
+			mapOverlays.add(user.getCurrentLocation());
 		user.setCurrentLocationOverlayIndex(index);
 		mapview.invalidate();		
 	}
@@ -40,17 +41,25 @@ public class MyMapLocationManager {
 
 	public void showUserPath(User user) {
 		int index = mapOverlays.size();
-		mapOverlays.add(user.getPathOverlay());
-		mapOverlays.add(user.getLocationOverlay());
+//		mapOverlays.add(user.getPathOverlay());
+//		mapOverlays.add(user.getLocationOverlay());
 		user.setPathOverlayIndex(index);
+		
+		if(user.getPathOverlay() != null && !user.getPathOverlay().isEmpty()) 
+			mapOverlays.add(user.getPathOverlay());
+		if(user.getLocationOverlay() != null && !user.getLocationOverlay().isEmpty())
+			mapOverlays.add(user.getLocationOverlay());;  
+
 		mapview.invalidate();
 	}
 	
 	public void hideUserPath(User user) {
 		//need to keep track of the index of overlay in mapoverlay list
-		mapOverlays.remove(user.getPathOverlay());
-		mapOverlays.remove(user.getLocationOverlay());
-		user.removePathOverlayIndex();
+		if(user.getPathOverlay() != null) {
+			mapOverlays.remove(user.getPathOverlay());
+			mapOverlays.remove(user.getLocationOverlay());
+			user.removePathOverlayIndex();
+		}
 		mapview.invalidate();
 	}
 	
