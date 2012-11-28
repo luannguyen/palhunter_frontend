@@ -22,50 +22,58 @@ public class LocationItemizedOverlay extends ItemizedOverlay<OverlayItem> {
 
 	public List<OverlayItem> getOverlays()
 	{
-		return myOverlays;
+		return getMyOverlays();
 	}
 	
 	public void addOverlay(OverlayItem overlay) {
-	    myOverlays.add(overlay);
+	    getMyOverlays().add(overlay);
 	    populate();
 	}
 	
 	public OverlayItem getOverlay(int i) {
-		return myOverlays.get(i);
+		return getMyOverlays().get(i);
 	}
 	
 	public void removeOverlay(OverlayItem overlay) {
-		myOverlays.remove(overlay);
+		getMyOverlays().remove(overlay);
 		populate();
 	}
 	
 	public void clear() {
-		myOverlays.clear();
+		getMyOverlays().clear();
 	}
 	
 	public boolean isEmpty() {
-		return myOverlays.isEmpty();
+		return getMyOverlays().isEmpty();
 	}
 	
 	@Override
 	protected OverlayItem createItem(int i) {
 		// TODO Auto-generated method stub
-		return myOverlays.get(i);
+		return getMyOverlays().get(i);
 	}
 
 	@Override
 	public int size() {
 		// TODO Auto-generated method stub
-		return myOverlays.size();
+		return getMyOverlays().size();
 	}
 
 	@Override
 	protected boolean onTap(int index) {
-	  OverlayItem item = myOverlays.get(index);
+	  OverlayItem item = getMyOverlays().get(index);
 	  AlertDialog.Builder dialog = new AlertDialog.Builder(myContext);
 	  dialog.setTitle(item.getTitle());
 	  dialog.setMessage(item.getSnippet());
 	  dialog.show();
 	  return true;
+	}
+
+	public ArrayList<OverlayItem> getMyOverlays() {
+		return myOverlays;
+	}
+
+	public void setMyOverlays(ArrayList<OverlayItem> myOverlays) {
+		this.myOverlays = myOverlays;
 	}
 }
