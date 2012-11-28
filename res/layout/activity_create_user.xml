@@ -1,40 +1,60 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/main_background" >
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@drawable/main_background"
+	android:gravity="center">
+	
+	    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/create_user_button"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="114dp"
+        android:orientation="vertical"
+        >
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical" >
+        <EditText
+            android:id="@+id/first_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="10"
+            android:hint="@string/first_name"   
+            android:inputType="textPersonName"  />
+            
+        <EditText
+            android:id="@+id/last_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="22dp"
+            android:ems="10"
+            android:hint="@string/last_name"
+            android:inputType="textPersonName" />
 
-            <EditText
-                android:id="@+id/first_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
+    </LinearLayout>
+	
+    <Button
+    	android:id="@+id/create_user_button"
+    	android:layout_width="80dp"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:layout_centerHorizontal="true"
+    	android:layout_marginBottom="66dp"
+    	android:background="@drawable/square_white"
+    	android:onClick="SubmitData"
+    	android:text="@string/create_new_account"/>
 
-            <EditText
-                android:id="@+id/last_name"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPersonName" />
-
-            <Button
-                android:id="@+id/create_user_button"
-                android:layout_width="114dp"
-                android:layout_height="wrap_content"
-                android:onClick="SubmitData"
-                android:text="@string/create_new_account" />
-
-            <Button
-                android:id="@+id/button1"
-                android:layout_width="114dp"
-                android:layout_height="wrap_content"
-                android:onClick="BackToLogin"
-                android:text="@string/log_in" />
-
-        </LinearLayout>
+    <Button
+    	android:id="@+id/button1"
+    	android:layout_width="80dp"
+    	android:layout_height="wrap_content"
+    	android:layout_alignLeft="@+id/create_user_button"
+    	android:layout_alignParentBottom="true"
+    	android:layout_marginBottom="17dp"
+    	android:background="@drawable/square_white"
+    	android:onClick="BackToLogin"
+    	android:text="@string/log_in"/>
 
 </RelativeLayout>
