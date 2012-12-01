@@ -31,9 +31,9 @@
 	<string name="lblBtnAdd">Add Item</string>
 	<string name="txtEmpty">List is empty</string>
 	<string name="lblBtnDel">Delete Selected Items</string>
-	<string name="remove_friends">Remove Friends</string>
-	<string name="add_friends">Add Friends</string>
-	<string name="add_more_friends">Add more friends</string>
+	<string name="remove_friends">Remove</string>
+	<string name="add_friends">Add</string>
+	<string name="add_more_friends">Add List</string>
 	<string name="title_activity_add_more_friends">AddMoreFriendsActivity</string>
 	<string name="friend_manager">manage friends</string>
 	<string name="title_activity_query_location">QueryLocationActivity</string>

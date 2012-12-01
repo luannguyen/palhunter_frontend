@@ -35,6 +35,8 @@ public class User implements Parcelable{
 	
 	boolean locationInMemory;
 	boolean friendsInMemory;
+	boolean mainUser;
+	
 	MyLocation.MyLocationHandler locationHandler;
 	static final String USER_TYPE = "my user";
 	
@@ -55,6 +57,7 @@ public class User implements Parcelable{
 		locationInMemory = false;
 		friendsInMemory = false;
 		locationHandler = handler; 
+		mainUser = false;
 	}
 	
 	public User() {
@@ -62,6 +65,7 @@ public class User implements Parcelable{
 		friendList = new ArrayList<User>();	
 		myOverlayIndexMap = new HashMap<Overlay, Integer>();
 		locationInMemory = false;
+		mainUser = false;
 	}
 	
     private User(Parcel in) {
@@ -71,6 +75,7 @@ public class User implements Parcelable{
     	lastName = in.readString();
     	createdTime = in.readLong();
     	locationInMemory  = (in.readByte() == 1);
+    	mainUser = (in.readByte() == 1);
     	
     	friendList = new ArrayList<User>();
     	in.readTypedList(friendList,User.CREATOR);
@@ -146,7 +151,7 @@ public class User implements Parcelable{
 		OverlayItem overlayitem = new OverlayItem(myPoint, getFullName(), currentLocation.getTime()); 
 		
 		if(myPathOverlay == null) {
-			myPathOverlay = new PathOverlay(myPastLocations, myMapView, myContext);
+			myPathOverlay = new PathOverlay(myPastLocations, myMapView, myContext, mainUser);
 		} 
 		
 		if(!myCurrentLocationOverlay.isEmpty()) {
@@ -170,7 +175,7 @@ public class User implements Parcelable{
 		GeoPoint myPoint = null;
 		OverlayItem overlayitem = null;
 		if(myPastLocations.size() > 0) {
-			myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext);
+			myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext, mainUser);
 		}
 		
 		for(int i=0; i<myPastLocations.size(); i++) {
@@ -178,7 +183,7 @@ public class User implements Parcelable{
 			overlayitem = new OverlayItem(myPoint, getFullName(), myPastLocations.get(i).getTime());
 			myLocationOveraly.addOverlay(overlayitem);
 			if(i==0) {
-				myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext);
+				myPathOverlay =  new PathOverlay(myPastLocations, myMapView, myContext, mainUser);
 			} 
 		}
 		if(overlayitem != null){
@@ -327,8 +332,9 @@ public class User implements Parcelable{
     	out.writeString(lastName);
     	out.writeLong(createdTime);
     	out.writeByte((byte) (locationInMemory ? 1 : 0));
+    	out.writeByte((byte) (mainUser ? 1 : 0));
     	out.writeTypedList(friendList);
-    	out.writeTypedList(myPastLocations);
+    	out.writeTypedList(myPastLocations); 
     }
     
 

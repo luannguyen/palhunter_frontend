@@ -48,6 +48,9 @@ public class MyLocation extends MapActivity implements OnClickListener {
     MyLocationHandler locationHandler;
     Drawable drawable;
     
+    LocationManager locationManager;
+    LocationListener locationListener;
+    
     static final int ON_CREATE = 1;
     static final int ON_RESUME = 2;
     
@@ -71,6 +74,8 @@ public class MyLocation extends MapActivity implements OnClickListener {
     	userList = new HashMap<Integer, User>();
     	
     	myUser = new User(drawable, this, locationHandler, mapView);
+    	myUser.mainUser = true;
+    	
     	Intent intent = getIntent();
     	Bundle b = intent.getExtras();
     	myUser.userId = b.getInt("id");
@@ -83,10 +88,10 @@ public class MyLocation extends MapActivity implements OnClickListener {
     	
         loadMyPastLocations(ON_CREATE);
         
-        LocationManager lm = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        LocationListener ll = new myLocationListener();
+        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new myLocationListener();
         
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10,ll); 
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10, locationListener); 
         
         loadMyFriendList(ON_CREATE);
         
@@ -97,7 +102,18 @@ public class MyLocation extends MapActivity implements OnClickListener {
 		});
 
     }
+
+    public void stopUpdate(View view)
+    {
+    	locationManager.removeUpdates(locationListener);
+    }
     
+    public void startUpdate(View view)
+    {
+    	locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 60*1000,10, locationListener); 
+    }
+    
+
     @Override
     public void onPause()
     {
