@@ -1,0 +1,52 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <TextView
+        android:id="@+id/myname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/hello_world" />
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/remove_friends"
+        android:layout_below="@+id/myname" 
+        android:choiceMode="multipleChoice">
+
+    </ListView>
+
+    <Button
+    	android:id="@+id/add_more_friends"
+    	android:layout_width="80dp"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:layout_alignParentRight="true"
+    	android:background="@drawable/square_green_light"
+    	android:onClick="AddMoreFriends"
+    	android:text="@string/add_more_friends"/>
+
+    <Button
+    	android:id="@+id/back_to_map_btn"
+    	android:layout_width="80dp"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:layout_alignParentLeft="true"
+    	android:background="@drawable/square_green_light"
+    	android:onClick="BackToMyMap"
+    	android:text="@string/back_to_map"/>
+
+    <Button
+    	android:id="@+id/remove_friends"
+    	android:layout_width="80dp"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentBottom="true"
+    	android:layout_alignRight="@+id/myname"
+    	android:background="@drawable/square_green_light"
+    	android:text="@string/remove_friends"/>
+
+</RelativeLayout>
