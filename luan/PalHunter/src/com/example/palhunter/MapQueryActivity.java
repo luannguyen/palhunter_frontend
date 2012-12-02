@@ -1,6 +1,8 @@
 package com.example.palhunter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,7 +23,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -44,7 +45,10 @@ public class MapQueryActivity extends MapActivity {
 	MyMapLocationManager myLocationManager;
 	Drawable drawable;
 	
-	String httpKnnQuery = "id=%d&action=queryKNN&kfriends=%d&lat=%d&lon=%d";
+	String httpKnnFriendQuery = "id=%d&action=queryKNN&kfriends=%d&lat=%d&lon=%d";
+	String httpKnnUserQuery = "id=%d&action=queryKNNUsers&&kfriends=%d&lat=%d&lon=%d";
+
+	LocationItemizedOverlay itemizedOverlay;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -67,6 +71,8 @@ public class MapQueryActivity extends MapActivity {
 		
 		TextView nameField = (TextView) findViewById(R.id.nameField2);
 		nameField.setText(myUser.firstName + " " + myUser.lastName);
+		
+		itemizedOverlay = new LocationItemizedOverlay(drawable, this);
 		
 		nameField.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
@@ -123,11 +129,24 @@ public class MapQueryActivity extends MapActivity {
 				EditText valueView = (EditText) popupView
 						.findViewById(R.id.kValue);
 				Integer kValue = Integer.parseInt(valueView.getText().toString());
-				popupWindow.dismiss();
 				
-				GeoPoint currentPoint = myUser.getCurrentLocationPoint();
-				String strKnnQuery = String.format(httpKnnQuery, myUser.userId ,kValue, currentPoint.getLatitudeE6(), currentPoint.getLongitudeE6());
+				RadioGroup radioGroup = (RadioGroup) popupView
+						.findViewById(R.id.knnModeGroup);
+				popupWindow.dismiss();
 
+				int id = radioGroup.getCheckedRadioButtonId();
+				// default kms
+				
+				String strKnnQuery = "";
+				GeoPoint currentPoint = myUser.getCurrentLocationPoint();
+
+				if (id == R.id.knn_friend_radio) {
+					//return k nearest friends
+					strKnnQuery = String.format(httpKnnFriendQuery, myUser.userId ,kValue, currentPoint.getLatitudeE6(), currentPoint.getLongitudeE6());
+				} else {
+					//return k nearest users
+					strKnnQuery = String.format(httpKnnUserQuery, myUser.userId ,kValue, currentPoint.getLatitudeE6(), currentPoint.getLongitudeE6());
+				}
 				DatabaseClient.get(strKnnQuery, null, new MyKNNHandler());
 			}
 		});
@@ -189,11 +208,11 @@ public class MapQueryActivity extends MapActivity {
 		public void onSuccess(JSONArray locationArray) {
 			int i = 0;
 			int latitudeValue,longitudeValue, pid;
-			long time; 
-			Drawable drawable = getResources().getDrawable(R.drawable.androidmarker);
-
-			LocationItemizedOverlay itemizedOverlay = new LocationItemizedOverlay(drawable, getBaseContext());
+			long timestamp; 
+			String firstName, lastName;
+			
 			mapOverlays.clear();
+			itemizedOverlay.clear();
 			
 			System.out.println("get knn on Success, there are "+ locationArray.length() + " past locations");
 			mapOverlays.add(myUser.getCurrentLocation());
@@ -205,9 +224,15 @@ public class MapQueryActivity extends MapActivity {
 					pid = location.getInt("PID");
 					latitudeValue = location.getInt("LAT_INT");
 					longitudeValue = location.getInt("LONG_INT");
-					time = location.getLong("UPDATED_TIME");
-				//	user.addLocation(latitudeValue, longitudeValue, time);	
-					OverlayItem overlayitem = new OverlayItem(new GeoPoint(latitudeValue, longitudeValue), String.valueOf(pid), String.valueOf(time));   
+					timestamp = location.getLong("UPDATED_TIME");
+					firstName = location.getString("FIRST_NAME");
+					lastName = location.getString("LAST_NAME");
+					
+					Calendar calender = Calendar.getInstance();
+					calender.setTimeInMillis(timestamp);
+					Date date =  calender.getTime();
+										
+					OverlayItem overlayitem = new OverlayItem(new GeoPoint(latitudeValue, longitudeValue), firstName + lastName, date.toGMTString());   
 					itemizedOverlay.addOverlay(overlayitem);
 				}	
 				mapOverlays.add(itemizedOverlay);

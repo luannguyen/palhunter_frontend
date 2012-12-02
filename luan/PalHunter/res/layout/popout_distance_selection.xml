@@ -66,6 +66,26 @@
 			android:layout_height="wrap_content"
 			android:inputType="number"/>
 
+		<RadioGroup
+			android:id="@+id/knnModeGroup"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:checkedButton="@+id/knn_friend_radio"
+			android:orientation="horizontal">
+
+			<RadioButton
+				android:id="@+id/knn_friend_radio"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/knn_friend"/>
+
+			<RadioButton
+				android:id="@+id/knn_user_radio"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/knn_user"/>
+		</RadioGroup>
+
 		<LinearLayout
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content">

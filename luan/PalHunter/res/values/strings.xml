@@ -50,5 +50,7 @@
 	<string name="knnSearchBtn">knnSearch</string>
 	<string name="rangeSearchBtn">rangeSearch</string>
 	<string name="k_nn_hint">num of nearest user</string>
+	<string name="knn_user">users</string>
+	<string name="knn_friend">friends</string>
 	
 </resources>

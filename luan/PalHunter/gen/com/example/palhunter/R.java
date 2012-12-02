@@ -39,6 +39,7 @@ public final class R {
         public static final int square_blue_light=0x7f020019;
         public static final int square_green_light=0x7f02001a;
         public static final int square_white=0x7f02001b;
+        public static final int trojean=0x7f02001c;
     }
     public static final class id {
         public static final int Button01=0x7f080014;
@@ -50,7 +51,7 @@ public final class R {
         public static final int button1=0x7f08000b;
         public static final int button2=0x7f080019;
         public static final int button_login=0x7f080011;
-        public static final int confirmBtn=0x7f08002d;
+        public static final int confirmBtn=0x7f080030;
         public static final int create_user_button=0x7f08000a;
         public static final int currentLocationRadioBtn=0x7f080024;
         public static final int distanceValue=0x7f080026;
@@ -62,7 +63,10 @@ public final class R {
         public static final int friend_list=0x7f080003;
         public static final int kValue=0x7f08002b;
         public static final int kmsRadio=0x7f080029;
-        public static final int knnConfirmBtn=0x7f08002c;
+        public static final int knnConfirmBtn=0x7f08002f;
+        public static final int knnModeGroup=0x7f08002c;
+        public static final int knn_friend_radio=0x7f08002d;
+        public static final int knn_user_radio=0x7f08002e;
         public static final int last_name=0x7f080006;
         public static final int last_name_login=0x7f080013;
         public static final int linearLayout1=0x7f080004;
@@ -75,7 +79,7 @@ public final class R {
         public static final int mapview=0x7f080020;
         public static final int mapview2=0x7f08001b;
         public static final int measureGroup=0x7f080027;
-        public static final int menu_settings=0x7f08002e;
+        public static final int menu_settings=0x7f080031;
         public static final int milesRadio=0x7f080028;
         public static final int myname=0x7f08000c;
         public static final int nameFeild=0x7f08001c;
@@ -136,6 +140,8 @@ public final class R {
         public static final int k_nn_hint=0x7f050030;
         public static final int kms=0x7f050029;
         public static final int knnSearchBtn=0x7f05002e;
+        public static final int knn_friend=0x7f050032;
+        public static final int knn_user=0x7f050031;
         public static final int last_name=0x7f050017;
         public static final int lblBtnAdd=0x7f05001b;
         public static final int lblBtnDel=0x7f05001d;

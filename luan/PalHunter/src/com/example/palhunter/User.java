@@ -96,6 +96,15 @@ public class User implements Parcelable{
 		}
 	}
 	
+	public User getFriend(int userId) {
+		for(int i=0; i<friendList.size(); i++) {
+			if(friendList.get(i).userId == userId) {
+				return friendList.get(i);
+			}
+		}
+		return null;	
+	}
+	
 	//overwrite
 	public String toString()
 	{
@@ -233,33 +242,7 @@ public class User implements Parcelable{
 	public int getPathOverlayIndex() {
 		return myOverlayIndexMap.get(myPathOverlay);
 	}
-	/*
-	public void getLocations(InputStream responseStream) throws Exception {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				responseStream));
-		StringBuilder sb = new StringBuilder();
-		String line = null;
-		int i;
-		int longtitude, latitude;
-		long time;
-		try {
-			while ((line = reader.readLine()) != null) {
-				sb.append(line);
-			}
 
-			JSONArray joa = new JSONArray(sb.toString());
-			for (i = 0; i < joa.length(); i++) {
-				longtitude = joa.getJSONObject(i).getInt("LONG_INT");
-				latitude = joa.getJSONObject(i).getInt("LAT_INT");
-				time = joa.getJSONObject(i).getLong("UPDATED_TIME");
-				myPastLocations.add(new UserLocation(longtitude, latitude, time));
-			}
-		} catch (Exception e) {
-			System.out.println("failed to get user past locations");
-			throw e;
-		}
-	}
-*/
 	public static void getTotalUserNumber(final JsonHttpResponseHandler myHandler) throws Exception {
 
 		DatabaseClient.get("action=getTotalPeople", null, myHandler);

@@ -1,10 +1,14 @@
 package com.example.palhunter;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.format.DateFormat;
+import android.text.format.Time;
 
 import com.google.android.maps.GeoPoint;
 
@@ -24,13 +28,15 @@ public class UserLocation implements Parcelable{
 	public UserLocation(int la, int lo, long time) {
 		locationPoint = new GeoPoint(la, lo);
 		timeStamp = time;
-		calender = Calendar.getInstance();
-		calender.setTimeInMillis(time);
+
 	}
 	
 	public String getTime() {
+		calender = Calendar.getInstance();
+		calender.setTimeInMillis(timeStamp);
 		Date date =  calender.getTime();
 		return date.toGMTString();
+		
 	}
 	
 	public GeoPoint getLocationPoint()
