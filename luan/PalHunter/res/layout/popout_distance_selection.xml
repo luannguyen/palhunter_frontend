@@ -38,13 +38,14 @@
 			android:id="@+id/measureGroup"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
+			android:checkedButton="@+id/milesRadio"
 			android:orientation="horizontal">
 
-          <RadioButton
-          	android:id="@+id/milesRadio"
-          	android:layout_width="wrap_content"
-          	android:layout_height="wrap_content"
-          	android:text="@string/miles"/>
+			<RadioButton
+				android:id="@+id/milesRadio"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/miles"/>
 
           <RadioButton
           	android:id="@+id/kmsRadio"
@@ -57,20 +58,34 @@
 			android:id="@+id/textView1"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="k nearest neighbor"/>
+			android:text="@string/k_nn_hint"/>
 
 		<EditText
-			android:id="@+id/editText1"
+			android:id="@+id/kValue"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:inputType="number"/>
 
-      <Button
-      	android:id="@+id/confirmBtn"
-      	android:layout_width="fill_parent"
-      	android:layout_height="wrap_content"
-      	android:text="@string/search"/>
+		<LinearLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content">
+
+			<Button
+				android:id="@+id/knnConfirmBtn"
+				style="?android:attr/buttonStyleSmall"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/knnSearchBtn"/>
+
+			<Button
+				android:id="@+id/confirmBtn"
+				style="?android:attr/buttonStyleSmall"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="@string/rangeSearchBtn"/>
+		</LinearLayout>
 
       </LinearLayout>
+
  </LinearLayout>
 </LinearLayout>

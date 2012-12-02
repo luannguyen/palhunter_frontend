@@ -50,18 +50,19 @@ public final class R {
         public static final int button1=0x7f08000b;
         public static final int button2=0x7f080019;
         public static final int button_login=0x7f080011;
-        public static final int confirmBtn=0x7f08002c;
+        public static final int confirmBtn=0x7f08002d;
         public static final int create_user_button=0x7f08000a;
         public static final int currentLocationRadioBtn=0x7f080024;
         public static final int distanceValue=0x7f080026;
-        public static final int editText1=0x7f08002b;
         public static final int email=0x7f080009;
         public static final int first_name=0x7f080005;
         public static final int first_name_login=0x7f080012;
         public static final int friendManagerBtn=0x7f08001d;
         public static final int friendNameView=0x7f080023;
         public static final int friend_list=0x7f080003;
+        public static final int kValue=0x7f08002b;
         public static final int kmsRadio=0x7f080029;
+        public static final int knnConfirmBtn=0x7f08002c;
         public static final int last_name=0x7f080006;
         public static final int last_name_login=0x7f080013;
         public static final int linearLayout1=0x7f080004;
@@ -74,7 +75,7 @@ public final class R {
         public static final int mapview=0x7f080020;
         public static final int mapview2=0x7f08001b;
         public static final int measureGroup=0x7f080027;
-        public static final int menu_settings=0x7f08002d;
+        public static final int menu_settings=0x7f08002e;
         public static final int milesRadio=0x7f080028;
         public static final int myname=0x7f08000c;
         public static final int nameFeild=0x7f08001c;
@@ -100,9 +101,8 @@ public final class R {
         public static final int activity_main=0x7f030005;
         public static final int activity_map_query=0x7f030006;
         public static final int activity_my_location=0x7f030007;
-        public static final int activity_query_location=0x7f030008;
-        public static final int list_friend_item_layout=0x7f030009;
-        public static final int popout_distance_selection=0x7f03000a;
+        public static final int list_friend_item_layout=0x7f030008;
+        public static final int popout_distance_selection=0x7f030009;
     }
     public static final class menu {
         public static final int activity_add_more_friends=0x7f070000;
@@ -133,7 +133,9 @@ public final class R {
         public static final int friend_list=0x7f05000e;
         public static final int friend_manager=0x7f050022;
         public static final int hello_world=0x7f050001;
+        public static final int k_nn_hint=0x7f050030;
         public static final int kms=0x7f050029;
+        public static final int knnSearchBtn=0x7f05002e;
         public static final int last_name=0x7f050017;
         public static final int lblBtnAdd=0x7f05001b;
         public static final int lblBtnDel=0x7f05001d;
@@ -149,6 +151,7 @@ public final class R {
         public static final int password=0x7f05002c;
         public static final int past_location=0x7f050012;
         public static final int query_my_friends_within_distance=0x7f050027;
+        public static final int rangeSearchBtn=0x7f05002f;
         public static final int remove_friends=0x7f05001e;
         public static final int search=0x7f05002a;
         public static final int title_activity_add_more_friends=0x7f050021;

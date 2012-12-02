@@ -47,5 +47,8 @@
 	<string name="username">Username</string>
 	<string name="password">password</string>
 	<string name="email">email</string>
+	<string name="knnSearchBtn">knnSearch</string>
+	<string name="rangeSearchBtn">rangeSearch</string>
+	<string name="k_nn_hint">num of nearest user</string>
 	
 </resources>

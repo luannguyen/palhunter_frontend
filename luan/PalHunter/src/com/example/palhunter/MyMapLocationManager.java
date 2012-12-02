@@ -66,7 +66,7 @@ public class MyMapLocationManager {
 	
 	public void zoomInToUser(User user) {
 		MapController controller = mapview.getController();
-        controller.setZoom(17);
+        controller.setZoom(19);
         controller.animateTo(user.getCurrentLocation().getCenter());
 	}
 	

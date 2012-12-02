@@ -35,7 +35,6 @@ public class LogInActivity extends FragmentActivity {
     String httpQueryUserByUsernameURL = "username=%s&password=%s&action=queryPeopleUsername";
     
     public void LogIn(View view) {
-
     	try {
 
 			

@@ -48,7 +48,7 @@
 	    android:layout_height="wrap_content"
 	    android:layout_above="@+id/listView1"
 	    android:layout_below="@+id/userMenuBar"
-	    android:apiKey="0chXDg4Omfe2clUO32gTkjTGpBbdbNTvQkOG-dw"
+	    android:apiKey="0W4EwH5Ey6PU6tiCpR3QDXuoN9cTeFdv6rdm6Ow"
 	    android:clickable="true" />
 
 	    <ListView
