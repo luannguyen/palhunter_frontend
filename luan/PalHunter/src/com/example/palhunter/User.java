@@ -1,6 +1,7 @@
 package com.example.palhunter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.json.JSONObject;
@@ -111,6 +112,11 @@ public class User implements Parcelable{
 		return null;	
 	}
 	
+	public void sortLocation() 
+	{
+		Collections.sort(myPastLocations);
+	}
+	
 	//overwrite
 	public String toString()
 	{
@@ -175,6 +181,8 @@ public class User implements Parcelable{
 		
 		myCurrentLocationOverlay.clear();
 		myCurrentLocationOverlay.addOverlay(overlayitem);
+		
+		sortLocation();
 	}
 	
 	public void addAllLocations(Drawable drawable, Context context, MapView mapView)
@@ -211,6 +219,8 @@ public class User implements Parcelable{
 		for(int i=0; i<friendList.size(); i++) {
 			friendList.get(i).addAllLocations(drawable, context, mapView);
 		}
+		
+		sortLocation();
 	}
 	
 	
@@ -260,6 +270,7 @@ public class User implements Parcelable{
 	
 	public void queryPastLocationFromServer()
 	{
+		myPastLocations.clear();
 	    String httpGetMyLocations = "id=%d&action=queryPastLocations";
     	final String getMyLocationsURL = String.format(httpGetMyLocations, userId);
     	DatabaseClient.get(getMyLocationsURL, null, locationHandler);

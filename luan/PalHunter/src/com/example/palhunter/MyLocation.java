@@ -189,6 +189,8 @@ public class MyLocation extends MapActivity implements OnClickListener {
 			//insert new location to database
     		final String url = String.format(httpPostURL, myUser.userId, latitudeValue, longitudeValue,pubTime);
     		DatabaseClient.get(url, null, null);
+    		
+    		mapView.invalidate();
 
 		}
 

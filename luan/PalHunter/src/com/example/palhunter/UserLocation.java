@@ -12,7 +12,7 @@ import android.text.format.Time;
 
 import com.google.android.maps.GeoPoint;
 
-public class UserLocation implements Parcelable{
+public class UserLocation implements Comparable<UserLocation>, Parcelable {
 
 	Calendar calender;
 	
@@ -73,4 +73,10 @@ public class UserLocation implements Parcelable{
 		    return new UserLocation[size];
 		}
 	};   
+
+
+	public int compareTo(UserLocation location) {
+		// TODO Auto-generated method stub
+		return (int)timeStamp - (int)location.timeStamp;
+	}
 }
