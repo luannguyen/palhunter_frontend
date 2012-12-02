@@ -41,14 +41,11 @@ public class User implements Parcelable{
 	static final String USER_TYPE = "my user";
 	
 	static final int MAX_HISTORY_LOCATION_NUM = 100;
-	public User(Drawable drawable, Context context, MyLocation.MyLocationHandler handler, MapView mapView) {
+	public User(Drawable drawable, Context context, MyLocation.MyLocationHandler handler, MapView mapView, boolean isMainUser) {
 		// TODO Auto-generated constructor stub
 		myPastLocations = new ArrayList<UserLocation>();
 		friendList = new ArrayList<User>();		
-		Drawable pathLocationDrawable = context.getResources().getDrawable(R.drawable.google_maps_marker);
-		myLocationOveraly = new LocationItemizedOverlay(pathLocationDrawable, context);
-		
-		myCurrentLocationOverlay = new LocationItemizedOverlay(drawable, context);
+
 		myOverlayIndexMap = new HashMap<Overlay, Integer>();
 		myContext = context;
 		myDrawable = drawable;
@@ -57,7 +54,16 @@ public class User implements Parcelable{
 		locationInMemory = false;
 		friendsInMemory = false;
 		locationHandler = handler; 
-		mainUser = false;
+		mainUser = isMainUser;
+		
+		if(mainUser) {
+			myDrawable = context.getResources().getDrawable(R.drawable.my_user_marker);
+		}
+		
+		Drawable pathLocationDrawable = context.getResources().getDrawable(R.drawable.google_maps_marker);
+		myLocationOveraly = new LocationItemizedOverlay(pathLocationDrawable, context);
+		
+		myCurrentLocationOverlay = new LocationItemizedOverlay(myDrawable, context);
 	}
 	
 	public User() {
@@ -177,10 +183,13 @@ public class User implements Parcelable{
 		myContext = context;
 		myMapView = mapView;
 
+		if(mainUser)
+			myDrawable = context.getResources().getDrawable(R.drawable.my_user_marker);
+		
 		Drawable pathLocationDrawable = context.getResources().getDrawable(R.drawable.google_maps_marker);
 		myLocationOveraly = new LocationItemizedOverlay(pathLocationDrawable, context);
 
-		myCurrentLocationOverlay = new LocationItemizedOverlay(drawable, context);
+		myCurrentLocationOverlay = new LocationItemizedOverlay(myDrawable, context);
 		GeoPoint myPoint = null;
 		OverlayItem overlayitem = null;
 		if(myPastLocations.size() > 0) {
@@ -288,7 +297,7 @@ public class User implements Parcelable{
     public ArrayList<User> findFriendsWithinDistance(double distanceValue) {
     	ArrayList<User> closeFriend = new ArrayList<User>();
     	for(int i=0; i<friendList.size(); i++) {
-    		if(distance(friendList.get(i)) < distanceValue * 1000) {
+    		if(distance(friendList.get(i)) < distanceValue) {
     			closeFriend.add(friendList.get(i));
     		}
     	}

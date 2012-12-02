@@ -73,8 +73,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
     	friendsHander = new MyFriendsHandler();
     	userList = new HashMap<Integer, User>();
     	
-    	myUser = new User(drawable, this, locationHandler, mapView);
-    	myUser.mainUser = true;
+    	myUser = new User(drawable, this, locationHandler, mapView, true);
     	
     	Intent intent = getIntent();
     	Bundle b = intent.getExtras();
@@ -230,7 +229,7 @@ public class MyLocation extends MapActivity implements OnClickListener {
 			try {
 				for(i=0; i<friendListArray.length(); i++) {
 				
-					User friend = new User(drawable, MyLocation.this, locationHandler, mapView);
+					User friend = new User(drawable, MyLocation.this, locationHandler, mapView, false);
 					JSONObject friendObj = friendListArray.getJSONObject(i);
 					friend.getUser(friendObj);
 					friend.queryPastLocationFromServer();

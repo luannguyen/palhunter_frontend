@@ -35,11 +35,13 @@ public final class R {
         public static final int ic_launcher=0x7f020015;
         public static final int location_manager=0x7f020016;
         public static final int main_background=0x7f020017;
-        public static final int readme=0x7f020018;
-        public static final int square_blue_light=0x7f020019;
-        public static final int square_green_light=0x7f02001a;
-        public static final int square_white=0x7f02001b;
-        public static final int trojean=0x7f02001c;
+        public static final int my_user_marker=0x7f020018;
+        public static final int my_user_marker_0=0x7f020019;
+        public static final int readme=0x7f02001a;
+        public static final int square_blue_light=0x7f02001b;
+        public static final int square_green_light=0x7f02001c;
+        public static final int square_white=0x7f02001d;
+        public static final int trojean=0x7f02001e;
     }
     public static final class id {
         public static final int Button01=0x7f080014;
@@ -132,6 +134,7 @@ public final class R {
         public static final int current_location=0x7f050011;
         public static final int edit=0x7f050019;
         public static final int email=0x7f05002d;
+        public static final int feet=0x7f050033;
         public static final int find_my_friend=0x7f050024;
         public static final int first_name=0x7f050016;
         public static final int friend_list=0x7f05000e;
@@ -149,6 +152,7 @@ public final class R {
         public static final int log_in=0x7f050006;
         public static final int log_out=0x7f05000c;
         public static final int menu_settings=0x7f050002;
+        public static final int meter=0x7f050034;
         public static final int miles=0x7f050028;
         public static final int my_past_location=0x7f05000d;
         public static final int name=0x7f050013;

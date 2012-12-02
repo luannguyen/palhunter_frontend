@@ -19,12 +19,17 @@ public class PathOverlay extends Overlay {
 	private MapView mapView;
 	Projection projection;
 	boolean mainUser;
+	static int Colors[] = {Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.LTGRAY};
+	static int colorId = 0;
+	int myColor;
 	
 	public PathOverlay(ArrayList<UserLocation> pastLocations, MapView map_view, Context context, boolean isMainUser) {
 		myPastLocations = pastLocations;
 		mapView = map_view;
 		projection = mapView.getProjection();
 		mainUser = isMainUser;
+		myColor = Colors[(colorId%Colors.length)];
+		colorId++;
 	}
 
 	public boolean isEmpty() {
@@ -40,9 +45,10 @@ public class PathOverlay extends Overlay {
 			mPaint.setDither(true);
 			
 			if(mainUser)
-				mPaint.setColor(Color.RED);
-			else
-				mPaint.setColor(Color.GREEN);
+				mPaint.setColor(Color.DKGRAY);
+			else {
+				mPaint.setColor(myColor);
+			}
 			
 			mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
 			mPaint.setStrokeJoin(Paint.Join.ROUND);
