@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+      <LinearLayout
+      	android:id="@+id/userMenuBar"
+      	android:layout_width="match_parent"
+      	android:layout_height="wrap_content"
+      	android:orientation="horizontal">
+
+      	<TextView
+      		android:id="@+id/nameFeild"
+      		android:layout_width="wrap_content"
+      		android:layout_height="wrap_content"/>
+
+      	<Button
+      		android:id="@+id/friendManagerBtn"
+      		android:layout_width="30dp"
+      		android:layout_height="30dp"
+      		android:layout_weight="0.00"
+      		android:background="@drawable/add_friend"
+      		android:onClick="ManageFriends"
+      		android:src="@drawable/add_friend"/>
+
+      	<Button
+      		android:id="@+id/LocationManagerBtn"
+      		style="@drawable/location_manager"
+      		android:layout_width="30dp"
+      		android:layout_height="30dp"
+      		android:background="@drawable/location_manager"
+      		android:onClick="QueryLocations"
+      		android:src="@drawable/location_manager"/>
+
+      	<Button
+      		android:id="@+id/button1"
+      		style="?android:attr/buttonStyleSmall"
+      		android:layout_width="wrap_content"
+      		android:layout_height="wrap_content"
+      		android:onClick="stopUpdate"
+      		android:text="Stop"/>
+
+      	<Button
+      		android:id="@+id/button2"
+      		style="?android:attr/buttonStyleSmall"
+      		android:layout_width="wrap_content"
+      		android:layout_height="wrap_content"
+      		android:onClick="startUpdate"
+      		android:text="Start"/>
+
+      	<Button
+      		android:id="@+id/logoutBtn"
+      		style="?android:attr/buttonStyleSmall"
+      		android:layout_width="wrap_content"
+      		android:layout_height="wrap_content"
+      		android:onClick="LogOut"
+      		android:text="@string/log_out"/>
+
+      </LinearLayout>
+    
+	<com.google.android.maps.MapView
+	    android:id="@+id/mapview"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_above="@+id/listView1"
+	    android:layout_below="@+id/userMenuBar"
+	    android:apiKey="0chXDg4Omfe2clUO32gTkjTGpBbdbNTvQkOG-dw"
+	    android:clickable="true" />
+
+	    <ListView
+	        android:id="@+id/listView1"
+	        android:layout_width="fill_parent"
+	        android:layout_height="200dp"
+	        android:layout_alignParentBottom="true" />
+</RelativeLayout>
